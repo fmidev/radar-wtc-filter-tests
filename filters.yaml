@@ -1,0 +1,39 @@
+filters:
+  # Thresholds interpreted as lower < value < upper
+  tail_filter:
+    primary_filter:
+      # filter threshold values for data that is removed
+      # Variable name needs to match pyart field name
+      velocity:
+        upper: 1.5
+        lower: -1.5
+      log_signal_to_noise_ratio:
+        upper: 5.0
+        lower: null
+      radar_echo_classification:
+        in: [1]
+        upper: null
+        lower: null
+  turbine_filter:
+    primary_filter:
+      reflectivity:
+        upper: null
+        lower: 30
+      polarimetric_meteo_index:
+        upper: 0.45
+        lower: null
+      log_signal_to_noise_ratio:
+        upper: null
+        lower: 30.0
+    secondary_filter:
+      window_size: [5, 5]
+      data:
+        # reflectivity:
+        #   upper: null
+        #   lower: 20
+        # polarimetric_meteo_index:
+        #   upper: 0.7
+        #   lower: null
+        log_signal_to_noise_ratio:
+          upper: null
+          lower: 20.0

@@ -1,0 +1,21 @@
+name: wtc
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - xarray
+  - dask
+  - numpy
+  - scipy
+  - pandas
+  - matplotlib
+  - seaborn
+  - cartopy
+  - netcdf4
+  - xradar
+  - arm_pyart
+  - ipdb
+  - cmcrameri
+  - h5py
+  - wradlib
+  - pip
