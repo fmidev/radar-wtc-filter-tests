@@ -1,0 +1,28 @@
+version: 1
+
+formatters:
+  simple:
+    format: "%(asctime)s - %(lineno)d: %(message)s"
+
+  complex:
+    format: "%(asctime)s - %(name)s - %(funcName) - %(lineno)d: %(message)s"
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: simple
+
+  calculate_distributions:
+    class: logging.handlers.RotatingFileHandler
+    maxBytes: 50000
+    backupCount: 10
+    level: DEBUG
+    formatter: complex
+    filename: logs/calculate_distributions.log
+
+loggers:
+  calculate_distributions:
+    level: INFO
+    handlers: [console, calculate_distributions]
+    propagate: yes

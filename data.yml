@@ -1,0 +1,12 @@
+radar:
+  path: "/mnt/arch/radar/raw/%Y/%m/%d/iris/raw/{radar}/"
+  fileformat: "%Y%m%d%H%M_{radar}.{task}.raw"
+  tasks: [PPI1_A]
+  radars: [VIM]
+
+masks:
+  VIM:
+    path: masks/202303130030_fivim_PVOL_mask.h5
+    groups:
+      PPI1_A: dataset1/data1
+
