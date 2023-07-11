@@ -102,15 +102,15 @@ QTY_FORMATS = {
 
 
 QTY_RANGES = {
-    "DBZH": (-32.0, 60.0),
+    "DBZH": (-15.0, 60.0),
     "HCLASS": (1.0, 6.0),
     "KDP": (-4.0, 8.0),
     "PHIDP": (0, 360.0),
     "RHOHV": (0.8, 1.0),
     "SQI": (0.0, 1.0),
     "TH": (-15.0, 60.0),
-    "VRAD": (-40.0, 40.0),
-    "VRADH": (-30.0, 30.0),
+    "VRAD": (-10.0, 10.0),
+    "VRADH": (-10.0, 10.0),
     # "radial_wind_speed": (-30.0, 30.0),
     "WRAD": (0.0, 5.0),
     "ZDR": (-4, 5.0),
@@ -267,14 +267,7 @@ def get_colormap(quantity):
 
 
 def set_HCLASS_cbar(cbar):
-    labels = [
-        "1 Other",
-        "2 Rain",
-        "3 WSnow",
-        "4 Ice",
-        "5 Graup",
-        "6 Hail",
-    ]
+    labels = get_HCLASS_labels()
     values = np.arange(1, 7)
     cbar.set_ticks(values, labels=labels)
     cbar.set_ticklabels(labels)
@@ -283,6 +276,17 @@ def set_HCLASS_cbar(cbar):
         rotation="vertical",
         va="center",
     )
+
+
+def get_HCLASS_labels():
+    return [
+        "1 Other",
+        "2 Rain",
+        "3 WSnow",
+        "4 Ice",
+        "5 Graup",
+        "6 Hail",
+    ]
 
 
 def get_sigmet_file_list_by_task(

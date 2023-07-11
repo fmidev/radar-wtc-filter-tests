@@ -7,6 +7,7 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
+import h5py
 import pyart
 import utils
 import yaml
@@ -75,9 +76,18 @@ def data_filter(radar, config):
     return radar
 
 
-def read_and_filter_radar(filename, filters=None):
+def read_and_filter_radar(filename, filters=None, mask_field=None):
     """Read a radar file and apply filters to it."""
     radar = pyart.io.read(filename)
+
+    if mask_field is not None:
+        radar.add_field_like(
+            "cross_correlation_ratio",
+            "mask",
+            mask_field.copy(),
+            replace_existing=False,
+        )
+
     if filters is not None:
         for filter in filters:
             if len(filter) > 1:
@@ -134,6 +144,10 @@ if __name__ == "__main__":
         default="%Y%m%d%H%M_*.PPI1_A.raw",
         help="Filename pattern",
     )
+    argparser.add_argument("-m", "--mask", type=str, help="Mask file")
+    argparser.add_argument(
+        "--mask-group", type=str, default="dataset1/data1", help="Mask group"
+    )
     args = argparser.parse_args()
 
     inpath = Path(args.inpath)
@@ -164,22 +178,33 @@ if __name__ == "__main__":
         "DBZH",
         "ZDR",
         "VRAD",
-        "WRAD",
-        "KDP",
+        # "WRAD",
+        # "KDP",
         "HCLASS",
         "PMI",
-        "SQI",
-        "CSP",
+        # "SQI",
+        # "CSP",
         "LOG",
     ]
 
     outpath = Path(args.outpath)
     outpath.mkdir(exist_ok=True, parents=True)
 
-    prefix = "Filtered" if not args.no_filter else "Unfiltered"
+    prefix = "Filtered " if not args.no_filter else "Unfiltered "
+
+    if args.mask is not None:
+        with h5py.File(args.mask, "r") as f:
+            mask = f[f"{args.mask_group}/data"][...]
+            mask = ~mask
+            mask = mask.astype(float)
+            mask[mask == 1] = np.nan
+            mask = np.ma.masked_invalid(mask)
+    else:
+        mask = None
 
     for timestamp, fn in files.items():
-        radar = read_and_filter_radar(fn, filters=filters)
+        radar = read_and_filter_radar(fn, filters=filters, mask_field=mask)
+
         utils.plot_ppi_fig(
             radar,
             qtys,
@@ -189,5 +214,6 @@ if __name__ == "__main__":
             markers=None,
             ext="png",
             title_prefix=prefix,
+            mask="mask" if mask is not None else None,
         )
         plt.close()

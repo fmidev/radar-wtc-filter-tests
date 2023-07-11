@@ -1,39 +1,43 @@
 filters:
   # Thresholds interpreted as lower < value < upper
-  tail_filter:
-    primary_filter:
-      # filter threshold values for data that is removed
-      # Variable name needs to match pyart field name
-      velocity:
-        upper: 1.5
-        lower: -1.5
-      log_signal_to_noise_ratio:
-        upper: 5.0
-        lower: null
-      radar_echo_classification:
-        in: [1]
-        upper: null
-        lower: null
+  # tail_filter:
+  #   primary_filter:
+  #     # filter threshold values for data that is removed
+  #     # Variable name needs to match pyart field name
+  #     velocity:
+  #       upper: 1.5
+  #       lower: -1.5
+  #     log_signal_to_noise_ratio:
+  #       upper: 5.0
+  #       lower: null
+  #     radar_echo_classification:
+  #       in: [1]
+  #       upper: null
+  #       lower: null
   turbine_filter:
+    # If only_inside_mask is true, only data inside the mask will be used
+    # if no mask is given, this is ignored
+    only_inside_mask: true
+    mask_field_name: "mask"
     primary_filter:
       reflectivity:
         upper: null
-        lower: 30
+        lower: 20.0
       polarimetric_meteo_index:
-        upper: 0.45
+        upper: 0.5
         lower: null
       log_signal_to_noise_ratio:
         upper: null
         lower: 30.0
     secondary_filter:
-      window_size: [5, 5]
+      window_size: [10, 10]
       data:
         # reflectivity:
         #   upper: null
         #   lower: 20
-        # polarimetric_meteo_index:
-        #   upper: 0.7
-        #   lower: null
+        polarimetric_meteo_index:
+          upper: 0.65
+          lower: null
         log_signal_to_noise_ratio:
           upper: null
           lower: 20.0
