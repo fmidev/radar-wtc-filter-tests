@@ -107,8 +107,9 @@ if __name__ == "__main__":
                 radar_obj.fields["reflectivity_vertical"]["data"].shape, dtype=bool
             )
             radar_elevs = radar_obj.elevation["data"][azims_]
-            # Select turbines that are below the scan elevation
-            selected_turbines_elev = (
+
+            # Select turbines that are either above the radar elevation or within the buffer
+            selected_turbines_elev = (elevs_ > radar_elevs) | (
                 abs(elevs_ - radar_elevs) <= config["elev_buffer_degrees"]
             )
 

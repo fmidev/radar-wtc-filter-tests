@@ -20,8 +20,8 @@ process_datasets:
 
 # Buffer to use around wind turbine
 elev_buffer_degrees: 0.6
-range_buffer_before_meters: 1000
-range_buffer_after_meters: 10000
+range_buffer_before_meters: 2000
+range_buffer_after_meters: 8000
 azim_buffer_degrees: 2.0
 
 output_path: turbine_masks
