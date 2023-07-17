@@ -1,0 +1,28 @@
+example_radar_files:
+  ANJ: example_radar_files/202307010000_fianj_PVOL.h5
+  KAN: example_radar_files/202307010000_fikan_PVOL.h5
+  KES: example_radar_files/202307010000_fikes_PVOL.h5
+  KOR: example_radar_files/202307010000_fikor_PVOL.h5
+  KUO: example_radar_files/202307010000_fikuo_PVOL.h5
+  LUO: example_radar_files/202307010000_filuo_PVOL.h5
+  NUR: example_radar_files/202307010000_finur_PVOL.h5
+  PET: example_radar_files/202307010000_fipet_PVOL.h5
+  UTA: example_radar_files/202307010000_fiuta_PVOL.h5
+  VIH: example_radar_files/202307010000_fivih_PVOL.h5
+  VIM: example_radar_files/202307010000_fivim_PVOL.h5
+
+# Lentoeste file
+wind_turbine_list: ef_efin_area1_obstdata_26_jan_2023.csv
+
+process_datasets:
+  - dataset1
+  - dataset2
+
+# Buffer to use around wind turbine
+elev_buffer_degrees: 0.6
+range_buffer_before_meters: 2000
+range_buffer_after_meters: 8000
+azim_buffer_degrees: 2.0
+
+output_path: turbine_masks
+output_filene: fi{radar_name}_turbine_mask.h5
