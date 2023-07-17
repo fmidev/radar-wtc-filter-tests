@@ -1,6 +1,12 @@
 # Images
 **/*.png
 
+# Data
+*.h5
+!masks/*.h5
+*.npy
+*.raw
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
