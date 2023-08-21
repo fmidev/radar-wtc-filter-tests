@@ -12,14 +12,23 @@ example_radar_files:
   VIM: example_radar_files/202307010000_fivim_PVOL.h5
 
 # Lentoeste file
-wind_turbine_list: ef_efin_area1_obstdata_26_jan_2023.csv
+wind_turbine_list: ef_efin_area1_obstdata_13_jul_2023.csv
 
 process_datasets:
   - dataset1
   - dataset2
+  - dataset3
+  - dataset4
+  - dataset5
+  - dataset6
 
 # Buffer to use around wind turbine
-elev_buffer_degrees: 0.6
+elev_buffer_degrees:
+  # different buffer values for different elevations
+  - elev_interval: [0.0, 0.5]
+    buffer: 0.6
+  - elev_interval: [0.5, 10.0]
+    buffer: 1.0
 range_buffer_before_meters: 2000
 range_buffer_after_meters: 8000
 azim_buffer_degrees: 2.0
