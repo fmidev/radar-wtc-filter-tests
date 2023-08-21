@@ -46,6 +46,7 @@ if __name__ == "__main__":
         help="Quantity to plot",
         default=["DBZH", "ZDR", "VRAD", "HCLASS", "PMI", "LOG"],
     )
+    argparser.add_argument("-a", "--alpha", type=float, help="Mask alpha", default=0.1)
     args = argparser.parse_args()
 
     inpath = Path(args.inpath)
@@ -89,7 +90,6 @@ if __name__ == "__main__":
         radar = pyart.io.read(fn)
         if mask is not None:
             mask_field = fradar.fields["mask"].copy()
-            mask_field["data"] = np.ma.masked_invalid(mask)
             radar.add_field("mask", mask_field)
 
         # Create the figure
@@ -97,11 +97,11 @@ if __name__ == "__main__":
             radar,
             fradar,
             qtys,
-            max_dist=150,
+            max_dist=250,
             outdir=outpath,
             markers=None,
             ext="png",
             mask="mask" if mask is not None else None,
-            mask_alpha=0.1,
+            mask_alpha=args.alpha,
         )
         plt.close()
