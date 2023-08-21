@@ -43,8 +43,19 @@ if __name__ == "__main__":
     first_dataset = datasets[0]
 
     # Read turbine locations
-    df = pd.read_csv(config["wind_turbine_list"], sep=";")
-    df = df[df["TYPE"] == "Wind_turbine"]
+    df = pd.read_csv(config["wind_turbine_list"], sep=";", skiprows=1)
+    df = df[df["TYPE"] == "Wind turbine"]
+
+    if len(df) == 0:
+        raise ValueError("No wind turbines found in file")
+
+    if "ELEV MSL (m)" not in df.columns and "ELEV MSL (FT)" in df.columns:
+        # Transform from feet to meters
+        df["ELEV MSL (m)"] = (
+            df["ELEV MSL (FT)"].apply(pd.to_numeric, errors="coerce") * 0.3048
+        )
+    else:
+        raise ValueError("Elevation column not found")
 
     turbine_lonlatalt = np.array(
         [
@@ -109,8 +120,17 @@ if __name__ == "__main__":
             radar_elevs = radar_obj.elevation["data"][azims_]
 
             # Select turbines that are either above the radar elevation or within the buffer
+            # Get buffer value from config
+            buffer = 0.5
+            for d in config["elev_buffer_degrees"]:
+                if (
+                    d["elev_interval"][0]
+                    <= np.mean(radar_elevs)
+                    <= d["elev_interval"][1]
+                ):
+                    buffer = d["buffer"]
             selected_turbines_elev = (elevs_ > radar_elevs) | (
-                abs(elevs_ - radar_elevs) <= config["elev_buffer_degrees"]
+                abs(elevs_ - radar_elevs) <= buffer
             )
 
             # Calculate buffer size
