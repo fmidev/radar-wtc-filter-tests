@@ -32,15 +32,18 @@ if __name__ == "__main__":
 
     # Read radar objects
     radar_objects = {}
-    for radar, file in config["example_radar_files"].items():
+    for radar, files in config["example_radar_files"].items():
         radar_objects[radar] = {}
-        for dataset in config["process_datasets"]:
-            radar_objects[radar][dataset] = pyart.aux_io.read_odim_h5(
-                file, include_datasets=[dataset]
-            )
+        for file in files:
+            for dataset in config["process_datasets"]:
+                try:
+                    radar_objects[radar][(file, dataset)] = pyart.aux_io.read_odim_h5(
+                        file, include_datasets=[dataset]
+                    )
+                except IndexError:
+                    print(f"Dataset {dataset} not found in file {file}, skipping"),
 
     datasets = config["process_datasets"]
-    first_dataset = datasets[0]
 
     # Read turbine locations
     df = pd.read_csv(config["wind_turbine_list"], sep=";", skiprows=1)
@@ -68,12 +71,13 @@ if __name__ == "__main__":
     turbine_lonlatalt = turbine_lonlatalt[~np.isnan(turbine_lonlatalt).any(axis=1)]
 
     for radar, data in radar_objects.items():
+        first_key = list(data.keys())[0]
         # Calculate range, azimuth and altitude for each wind turbine
         radar_lonlatalt = np.array(
             [
-                data[first_dataset].longitude["data"].item(),
-                data[first_dataset].latitude["data"].item(),
-                data[first_dataset].altitude["data"].item(),
+                data[first_key].longitude["data"].item(),
+                data[first_key].latitude["data"].item(),
+                data[first_key].altitude["data"].item(),
             ]
         )
 
@@ -95,14 +99,15 @@ if __name__ == "__main__":
 
         # if not mask_path.exists():
         mask_path.parent.mkdir(parents=True, exist_ok=True)
-        with h5py.File(mask_path, "w") as f_dest:
-            # Copy metadata from radar file
-            with h5py.File(config["example_radar_files"][radar], "r") as f_src:
-                f_src.copy(f_src["where"], f_dest, "where")
-                f_src.copy(f_src["what"], f_dest, "what")
-                f_src.copy(f_src["how"], f_dest, "how")
 
-        for dataset, radar_obj in data.items():
+        # Copy metadata from first radar file
+        with h5py.File(mask_path, "w") as f_dest, h5py.File(first_key[0], "r") as f_src:
+            # Copy metadata from radar file
+            f_src.copy(f_src["where"], f_dest, "where")
+            f_src.copy(f_src["what"], f_dest, "what")
+            f_src.copy(f_src["how"], f_dest, "how")
+
+        for (infile, dataset), radar_obj in data.items():
             # Round ranges to data resolution
             ranges_ = np.rint(ranges / radar_obj.range["meters_between_gates"]).astype(
                 int
@@ -115,7 +120,7 @@ if __name__ == "__main__":
 
             # Create mask for each wind turbine
             mask = np.zeros(
-                radar_obj.fields["reflectivity_vertical"]["data"].shape, dtype=bool
+                radar_obj.fields["reflectivity_horizontal"]["data"].shape, dtype=bool
             )
             radar_elevs = radar_obj.elevation["data"][azims_]
 
@@ -160,8 +165,21 @@ if __name__ == "__main__":
 
             # Save mask
             with h5py.File(mask_path, "a") as f:
+                # Get output dataset name as the highest dataset number + 1
+                dataset_no = (
+                    max(
+                        [
+                            int(re.findall(r"\d+", d)[0])
+                            for d in f.keys()
+                            if "dataset" in d
+                        ]
+                        + [0]
+                    )
+                    + 1
+                )
+                dsname = f"dataset{dataset_no}"
                 dset = f.require_dataset(
-                    f"{dataset}/data1/data",
+                    f"{dsname}/data1/data",
                     shape=mask.shape,
                     data=mask,
                     dtype=bool,
@@ -178,7 +196,7 @@ if __name__ == "__main__":
                 what.attrs["quantity"] = "mask"
                 what.attrs["undetect"] = 0.0
 
-                with h5py.File(config["example_radar_files"][radar], "r") as f_src:
-                    f_src.copy(f_src[f"/{dataset}/where"], f[f"/{dataset}"], "where")
-                    f_src.copy(f_src[f"/{dataset}/what"], f[f"/{dataset}"], "what")
-                    f_src.copy(f_src[f"/{dataset}/how"], f[f"/{dataset}"], "how")
+                with h5py.File(infile, "r") as f_src:
+                    f_src.copy(f_src[f"/{dataset}/where"], f[f"/{dsname}"], "where")
+                    f_src.copy(f_src[f"/{dataset}/what"], f[f"/{dsname}"], "what")
+                    f_src.copy(f_src[f"/{dataset}/how"], f[f"/{dsname}"], "how")
