@@ -10,11 +10,26 @@ masks:
     path: masks/202303130030_fivim_PVOL_mask.h5
     groups:
       PPI1_A: dataset1/data1
+      PPI1_B: dataset2/data1
+      PPI1_C: dataset3/data1
+      PPI1_D: dataset4/data1
+      PPI1_E: dataset5/data1
+      PPI1_F: dataset6/data1
   KAN:
     path: masks/202306060145_fikan_PVOL_mask.h5
     groups:
       PPI1_A: dataset1/data1
+      PPI1_B: dataset2/data1
+      PPI1_C: dataset3/data1
+      PPI1_D: dataset4/data1
+      PPI1_E: dataset5/data1
+      PPI1_F: dataset6/data1
   UTA:
     path: masks/202306060315_fiuta_PVOL_mask.h5
     groups:
       PPI1_A: dataset1/data1
+      PPI1_B: dataset2/data1
+      PPI1_C: dataset3/data1
+      PPI1_D: dataset4/data1
+      PPI1_E: dataset5/data1
+      PPI1_F: dataset6/data1

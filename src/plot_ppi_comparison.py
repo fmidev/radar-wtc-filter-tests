@@ -76,6 +76,7 @@ if __name__ == "__main__":
     outpath.mkdir(exist_ok=True, parents=True)
 
     if args.mask is not None:
+
         with h5py.File(args.mask, "r") as f:
             mask = f[f"{args.mask_group}/data"][...]
             mask = ~mask
@@ -86,6 +87,9 @@ if __name__ == "__main__":
         mask = None
 
     for timestamp, fn in files.items():
+
+        # Fin
+
         fradar = filter.read_and_filter_radar(fn, filters=filter_funcs, mask_field=mask)
         radar = pyart.io.read(fn)
         if mask is not None:

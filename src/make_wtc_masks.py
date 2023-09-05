@@ -1,20 +1,14 @@
 """Make masks that show wind turbine locations for each radar."""
 import argparse
-import argparse
 import os
 import re
-from copy import deepcopy
-from datetime import datetime
 from pathlib import Path
 
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import h5py
 import pyart
-import utils
 import yaml
-from scipy.ndimage import generic_filter
 import wradlib as wrl
 
 pyart.load_config(os.environ.get("PYART_CONFIG"))

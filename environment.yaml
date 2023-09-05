@@ -1,4 +1,4 @@
-name: wtc
+name: base
 channels:
   - conda-forge
 dependencies:

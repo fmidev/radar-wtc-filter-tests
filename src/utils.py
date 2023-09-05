@@ -195,8 +195,9 @@ def plot_ppi_comparison(
     # for ax in axes.flat[n_qtys:]:
     #     ax.remove()
 
-    fig.set_constrained_layout_pads(hspace=0.05)
+    fig.set_constrained_layout_pads(wspace=0.005)
     fig.suptitle(
+        f"{radar.metadata['instrument_name'].decode().capitalize()} "
         f"{time:%Y/%m/%d %H:%M} UTC {radar.fixed_angle['data'][0]:.1f}°",
         y=1.05,
     )
