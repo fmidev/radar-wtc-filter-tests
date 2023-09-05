@@ -1,0 +1,26 @@
+FROM jcrist/alpine-conda:4.6.8
+
+# Create the environment:
+ARG conda_env=wtc
+COPY environment.yml .
+ENV PYTHONDONTWRITEBYTECODE=true
+# RUN /opt/conda/bin/conda install --override-channels --freeze-installed -c conda-forge mamba && \
+# mamba env create -f environment.yml -n $conda_env --freeze-installed && \
+# mamba clean --all -f -y
+RUN /opt/conda/bin/conda env create -f environment.yml -n $conda_env && \
+    /opt/conda/bin/conda clean --all -f -y
+
+RUN conda init bash
+
+# Allow environment to be activated
+RUN echo "conda activate wtc" >> ~/.profile
+ENV PATH /opt/conda/envs/$conda_env/bin:$PATH
+ENV CONDA_DEFAULT_ENV $conda_env
+
+COPY . /code
+WORKDIR /code
+
+ENV INPUT_PATH /input
+ENV FILTER_COND filters.yaml
+
+ENTRYPOINT conda run -n $conda_env python plot_ppis.py

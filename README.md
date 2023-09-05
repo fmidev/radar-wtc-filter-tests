@@ -2,11 +2,15 @@
 
 ## Build Docker container
 
+If necessary, update the variables `NEW_MAMBA_USER`, `NEW_MAMBA_USER_ID` and `NEW_MAMBA_GROUP_ID` in the `Dockerfile` to match your user and group ID. This is necessary to ensure that the files created by the container are owned by the user running the container.
+
 ```bash
 docker build --pull --rm -f "Dockerfile" -t wtcfiltering:latest "."
 ```
 
 You can use the script `run_container.sh` to run the container. Update mounts to suit your setup.
+
+Additionally, you can use the `docker-compose.yml` file to run the container. Update mounts and user id to suit your setup.
 
 ## Specifying filter
 
@@ -51,6 +55,108 @@ filters:
         log_signal_to_noise_ratio:
           upper: null
           lower: 20.0
+```
+
+## Creating wind turbine masks
+
+```bash
+> python make_wtc_masks.py --help
+
+usage: make_wtc_masks.py [-h] config
+
+Make masks that show wind turbine locations for each radar.
+
+positional arguments:
+  config      Configuration file path
+
+options:
+  -h, --help  show this help message and exit
+
+```
+
+The configuration file is a YAML file that specifies the mask configuration and template radar files. An example is given below:
+
+```yaml
+example_radar_files:
+  KAN:
+    - example_radar_files/202307010000_fikan_PVOL.h5
+    - example_radar_files/202307010005_fikan_PVOL.h5
+    - example_radar_files/202307010010_fikan_PVOL.h5
+  UTA:
+    - example_radar_files/202307010000_fiuta_PVOL.h5
+    - example_radar_files/202307010005_fiuta_PVOL.h5
+    - example_radar_files/202307010010_fiuta_PVOL.h5
+
+# Lentoeste file
+wind_turbine_list: ef_efin_area1_obstdata_26_jan_2023.csv
+
+process_datasets:
+  - dataset1
+  - dataset2
+
+# Buffer to use around wind turbine
+elev_buffer_degrees:
+  # different buffer values for different elevations
+  - elev_interval: [0.0, 0.5]
+    buffer: 0.6
+  - elev_interval: [0.5, 10.0]
+    buffer: 1.0
+range_buffer_before_meters: 2000
+range_buffer_after_meters: 8000
+azim_buffer_degrees: 2.0
+
+output_path: turbine_masks
+output_filene: fi{radar_name}_turbine_mask.h5
+```
+
+The `wind_turbine_list` file is a CSV file with at least the following columns: `TYPE`, `LONG`, `LAT`, `ELEV MSL (m)`
+
+## Calculating radar variable distributions
+
+```bash
+> python calculate_distributions.py -h
+
+usage: calculate_distributions.py [-h] [-n NWORKERS] [-f FILTER] startdate enddate confpath outpath
+
+Plot distributions of data
+
+positional arguments:
+  startdate             Start date
+  enddate               End date
+  confpath              Configuration file path
+  outpath               Output file path
+
+options:
+  -h, --help            show this help message and exit
+  -n NWORKERS, --nworkers NWORKERS
+                        Number of workers
+  -f FILTER, --filter FILTER
+                        Filter configuration file
+
+```
+
+The configuration file is a YAML file that specifies the radar data to use and the masks that used to select data. An example is given below:
+
+```yaml
+radar:
+  path: "/arch/radar/raw/%Y/%m/%d/iris/raw/{radar}/"
+  fileformat: "%Y%m%d%H%M_{radar}.{task}.raw"
+  tasks: [PPI1_A]
+  radars: [UTA, KAN, VIM]
+
+masks:
+  VIM:
+    path: masks/202303130030_fivim_PVOL_mask.h5
+    groups:
+      PPI1_A: dataset1/data1
+  KAN:
+    path: masks/202306060145_fikan_PVOL_mask.h5
+    groups:
+      PPI1_A: dataset1/data1
+  UTA:
+    path: masks/202306060315_fiuta_PVOL_mask.h5
+    groups:
+      PPI1_A: dataset1/data1
 ```
 
 ## Plotting PPI figures
@@ -120,103 +226,3 @@ options:
 ```
 
 The arguments are similar to the `plot_ppis.py` script.
-
-## Creating wind turbine masks
-
-```bash
-> python make_wtc_masks.py --help
-
-usage: make_wtc_masks.py [-h] config
-
-Make masks that show wind turbine locations for each radar.
-
-positional arguments:
-  config      Configuration file path
-
-options:
-  -h, --help  show this help message and exit
-
-```
-
-The configuration file is a YAML file that specifies the mask configuration and template radar files. An example is given below:
-
-```yaml
-example_radar_files:
-  ANJ: example_radar_files/202307010000_fianj_PVOL.h5
-  KAN: example_radar_files/202307010000_fikan_PVOL.h5
-  KES: example_radar_files/202307010000_fikes_PVOL.h5
-  KOR: example_radar_files/202307010000_fikor_PVOL.h5
-  KUO: example_radar_files/202307010000_fikuo_PVOL.h5
-  LUO: example_radar_files/202307010000_filuo_PVOL.h5
-  NUR: example_radar_files/202307010000_finur_PVOL.h5
-  PET: example_radar_files/202307010000_fipet_PVOL.h5
-  UTA: example_radar_files/202307010000_fiuta_PVOL.h5
-  VIH: example_radar_files/202307010000_fivih_PVOL.h5
-  VIM: example_radar_files/202307010000_fivim_PVOL.h5
-
-# Lentoeste file
-wind_turbine_list: ef_efin_area1_obstdata_26_jan_2023.csv
-
-process_datasets:
-  - dataset1
-  - dataset2
-
-# Buffer to use around wind turbine
-elev_buffer_degrees: 0.6
-range_buffer_before_meters: 1000
-range_buffer_after_meters: 10000
-azim_buffer_degrees: 2.0
-
-output_path: turbine_masks
-output_filene: fi{radar_name}_turbine_mask.h5
-```
-
-The `wind_turbine_list` file is a CSV file with at least the following columns: `TYPE`, `LONG`, `LAT`, `ELEV MSL (m)`
-
-## Calculating radar variable distributions
-
-```bash
-> python calculate_distributions.py -h
-
-usage: calculate_distributions.py [-h] [-n NWORKERS] [-f FILTER] startdate enddate confpath outpath
-
-Plot distributions of data
-
-positional arguments:
-  startdate             Start date
-  enddate               End date
-  confpath              Configuration file path
-  outpath               Output file path
-
-options:
-  -h, --help            show this help message and exit
-  -n NWORKERS, --nworkers NWORKERS
-                        Number of workers
-  -f FILTER, --filter FILTER
-                        Filter configuration file
-
-```
-
-The configuration file is a YAML file that specifies the radar data to use and the masks that used to select data. An example is given below:
-
-```yaml
-radar:
-  path: "/arch/radar/raw/%Y/%m/%d/iris/raw/{radar}/"
-  fileformat: "%Y%m%d%H%M_{radar}.{task}.raw"
-  tasks: [PPI1_A]
-  radars: [UTA, KAN, VIM]
-
-masks:
-  VIM:
-    path: masks/202303130030_fivim_PVOL_mask.h5
-    groups:
-      PPI1_A: dataset1/data1
-  KAN:
-    path: masks/202306060145_fikan_PVOL_mask.h5
-    groups:
-      PPI1_A: dataset1/data1
-  UTA:
-    path: masks/202306060315_fiuta_PVOL_mask.h5
-    groups:
-      PPI1_A: dataset1/data1
-```

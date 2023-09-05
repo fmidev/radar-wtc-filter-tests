@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+  wtc-masks:
+    user: "1000:1000"
+    build: .
+    volumes:
+      - ./obstacle_data:/src/obstacle_data
+      - ./config/:/src/config
+      - ./mask_files:/src/turbine_masks
+      - ./example_radar_files:/src/example_radar_files
+    # command: python make_wtc_masks.py config/mask_calculation.yaml
+    entrypoint:
+      - /bin/bash
+    stdin_open: true # docker run -i
+    tty: true # docker run -t
+    environment:
+      HISTFILE: /home/mambauser/hist/.bash_history
