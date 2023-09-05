@@ -36,9 +36,6 @@ if __name__ == "__main__":
     )
     argparser.add_argument("-m", "--mask", type=str, help="Mask file")
     argparser.add_argument(
-        "--mask-group", type=str, default="dataset1/data1", help="Mask group"
-    )
-    argparser.add_argument(
         "-q",
         "--qtys",
         type=str,
@@ -75,23 +72,34 @@ if __name__ == "__main__":
     outpath = Path(args.outpath)
     outpath.mkdir(exist_ok=True, parents=True)
 
-    if args.mask is not None:
-
-        with h5py.File(args.mask, "r") as f:
-            mask = f[f"{args.mask_group}/data"][...]
-            mask = ~mask
-            mask = mask.astype(float)
-            mask[mask == 1] = np.nan
-            mask = np.ma.masked_invalid(mask)
-    else:
-        mask = None
-
     for timestamp, fn in files.items():
 
-        # Fin
+        # Original data
+        radar = pyart.io.read(fn)
+        # Find task name
+        task_name = radar.metadata["sigmet_task_name"].decode().strip()
+
+        # Find mask dataset
+        if args.mask is not None:
+
+            with h5py.File(args.mask, "r") as f:
+
+                mask_dataset = [
+                    k
+                    for k in f.keys()
+                    if k.startswith("dataset")
+                    and f[f"{k}/how"].attrs["task"].decode() == task_name
+                ][0]
+
+                mask = f[f"{mask_dataset}/data1/data"][...]
+                mask = ~mask
+                mask = mask.astype(float)
+                mask[mask == 1] = np.nan
+                mask = np.ma.masked_invalid(mask)
+        else:
+            mask = None
 
         fradar = filter.read_and_filter_radar(fn, filters=filter_funcs, mask_field=mask)
-        radar = pyart.io.read(fn)
         if mask is not None:
             mask_field = fradar.fields["mask"].copy()
             radar.add_field("mask", mask_field)
