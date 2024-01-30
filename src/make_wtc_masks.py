@@ -80,9 +80,7 @@ if __name__ == "__main__":
         )
         turbine_xyz = np.array([turbine_x, turbine_y, turbine_lonlatalt[:, 2]]).T
 
-        ranges, azims, elevs = wrl.georef.xyz_to_spherical(
-            turbine_xyz, alt=radar_lonlatalt[2]
-        )
+        ranges, azims, elevs = wrl.georef.xyz_to_spherical(turbine_xyz, altitude=radar_lonlatalt[2])
         # Round azimuths to data resolution
         azims = np.rint(np.floor(azims)).astype(int)
 
