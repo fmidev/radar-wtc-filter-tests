@@ -61,12 +61,13 @@ process_datasets:
   - dataset11
   - dataset12
   - dataset13
+  - dataset14
 
 # Buffer to use around wind turbine
 elev_buffer_degrees:
   # different buffer values for different elevations
   - elev_interval: [0.0, 0.5]
-    buffer: 0.6
+    buffer: 0.8
   - elev_interval: [0.5, 10.0]
     buffer: 1.0
 range_buffer_before_meters: 2000
