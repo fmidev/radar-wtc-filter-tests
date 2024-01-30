@@ -1,51 +1,51 @@
 example_radar_files:
   ANJ:
-    - example_radar_files/202307010000_fianj_PVOL.h5
-    - example_radar_files/202307010005_fianj_PVOL.h5
-    - example_radar_files/202307010010_fianj_PVOL.h5
+    - /example_radar_files/202401300000_fianj_PVOL.h5
+    - /example_radar_files/202401300005_fianj_PVOL.h5
+    - /example_radar_files/202401300010_fianj_PVOL.h5
   KAN:
-    - example_radar_files/202307010000_fikan_PVOL.h5
-    - example_radar_files/202307010005_fikan_PVOL.h5
-    - example_radar_files/202307010010_fikan_PVOL.h5
+    - /example_radar_files/202401300000_fikan_PVOL.h5
+    - /example_radar_files/202401300005_fikan_PVOL.h5
+    - /example_radar_files/202401300010_fikan_PVOL.h5
   KES:
-    - example_radar_files/202307010000_fikes_PVOL.h5
-    - example_radar_files/202307010005_fikes_PVOL.h5
-    - example_radar_files/202307010010_fikes_PVOL.h5
+    - /example_radar_files/202401300000_fikes_PVOL.h5
+    - /example_radar_files/202401300005_fikes_PVOL.h5
+    - /example_radar_files/202401300010_fikes_PVOL.h5
   KOR:
-    - example_radar_files/202307010000_fikor_PVOL.h5
-    - example_radar_files/202307010005_fikor_PVOL.h5
-    - example_radar_files/202307010010_fikor_PVOL.h5
+    - /example_radar_files/202401300000_fikor_PVOL.h5
+    - /example_radar_files/202401300005_fikor_PVOL.h5
+    - /example_radar_files/202401300010_fikor_PVOL.h5
   KUO:
-    - example_radar_files/202307010000_fikuo_PVOL.h5
-    - example_radar_files/202307010005_fikuo_PVOL.h5
-    - example_radar_files/202307010010_fikuo_PVOL.h5
+    - /example_radar_files/202401300000_fikuo_PVOL.h5
+    - /example_radar_files/202401300005_fikuo_PVOL.h5
+    - /example_radar_files/202401300010_fikuo_PVOL.h5
   LUO:
-    - example_radar_files/202307010000_filuo_PVOL.h5
-    - example_radar_files/202307010005_filuo_PVOL.h5
-    - example_radar_files/202307010010_filuo_PVOL.h5
+    - /example_radar_files/202401300000_filuo_PVOL.h5
+    - /example_radar_files/202401300005_filuo_PVOL.h5
+    - /example_radar_files/202401300010_filuo_PVOL.h5
   NUR:
-    - example_radar_files/202307010000_finur_PVOL.h5
-    - example_radar_files/202307010005_finur_PVOL.h5
-    - example_radar_files/202307010010_finur_PVOL.h5
+    - /example_radar_files/202401300000_finur_PVOL.h5
+    - /example_radar_files/202401300005_finur_PVOL.h5
+    - /example_radar_files/202401300010_finur_PVOL.h5
   PET:
-    - example_radar_files/202307010000_fipet_PVOL.h5
-    - example_radar_files/202307010005_fipet_PVOL.h5
-    - example_radar_files/202307010010_fipet_PVOL.h5
+    - /example_radar_files/202401300000_fipet_PVOL.h5
+    - /example_radar_files/202401300005_fipet_PVOL.h5
+    - /example_radar_files/202401300010_fipet_PVOL.h5
   UTA:
-    - example_radar_files/202307010000_fiuta_PVOL.h5
-    - example_radar_files/202307010005_fiuta_PVOL.h5
-    - example_radar_files/202307010010_fiuta_PVOL.h5
+    - /example_radar_files/202401250000_fiuta_PVOL.h5
+    - /example_radar_files/202401250005_fiuta_PVOL.h5
+    - /example_radar_files/202401250010_fiuta_PVOL.h5
   VIH:
-    - example_radar_files/202307010000_fivih_PVOL.h5
-    - example_radar_files/202307010005_fivih_PVOL.h5
-    - example_radar_files/202307010010_fivih_PVOL.h5
+    - /example_radar_files/202401300000_fivih_PVOL.h5
+    - /example_radar_files/202401300005_fivih_PVOL.h5
+    - /example_radar_files/202401300010_fivih_PVOL.h5
   VIM:
-    - example_radar_files/202307010000_fivim_PVOL.h5
-    - example_radar_files/202307010005_fivim_PVOL.h5
-    - example_radar_files/202307010010_fivim_PVOL.h5
+    - /example_radar_files/202401300000_fivim_PVOL.h5
+    - /example_radar_files/202401300005_fivim_PVOL.h5
+    - /example_radar_files/202401300010_fivim_PVOL.h5
 
 # Lentoeste file
-wind_turbine_list: /src/obstacle_data/ef_efin_area1_obstdata_13_jul_2023.csv
+wind_turbine_list: /obstacle_data/ef_efin_area1_obstdata__2_nov_2023.csv
 
 process_datasets:
   - dataset1
@@ -73,5 +73,5 @@ range_buffer_before_meters: 2000
 range_buffer_after_meters: 8000
 azim_buffer_degrees: 2.0
 
-output_path: turbine_masks
+output_path: /turbine_masks
 output_filene: fi{radar_name}_turbine_mask.h5
