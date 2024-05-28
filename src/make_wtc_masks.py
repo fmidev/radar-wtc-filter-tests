@@ -19,6 +19,7 @@ if __name__ == "__main__":
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
     argparser.add_argument("config", type=str, help="Configuration file path")
+    argparser.add_argument("--num-skip-rows", type=int, default=1, help="Number of rows to skip in the turbine file")
     args = argparser.parse_args()
 
     with open(args.config) as f:
@@ -40,7 +41,7 @@ if __name__ == "__main__":
     datasets = config["process_datasets"]
 
     # Read turbine locations
-    df = pd.read_csv(config["wind_turbine_list"], sep=";", skiprows=1)
+    df = pd.read_csv(config["wind_turbine_list"], sep=";", skiprows=args.num_skip_rows)
     df = df[df["TYPE"] == "Wind turbine"]
 
     if len(df) == 0:
