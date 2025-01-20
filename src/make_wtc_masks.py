@@ -86,9 +86,7 @@ if __name__ == "__main__":
         azims = np.rint(np.floor(azims)).astype(int)
 
         # Initialize mask file
-        mask_path = Path(config["output_path"]) / config["output_filene"].format(
-            radar_name=radar.lower()
-        )
+        mask_path = Path(config["output_path"]) / config["output_filename"].format(radar_name=radar.lower())
 
         # if not mask_path.exists():
         mask_path.parent.mkdir(parents=True, exist_ok=True)
