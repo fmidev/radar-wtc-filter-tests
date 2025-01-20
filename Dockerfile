@@ -1,9 +1,9 @@
 FROM mambaorg/micromamba:1-alpine
 
 # Change user, from https://micromamba-docker.readthedocs.io/en/latest/advanced_usage.html#changing-the-user-id-or-name
-ARG NEW_MAMBA_USER=mambauser
-ARG NEW_MAMBA_USER_ID=1000
-ARG NEW_MAMBA_USER_GID=1000
+ARG NEW_MAMBA_USER=radadm
+ARG NEW_MAMBA_USER_ID=7939
+ARG NEW_MAMBA_USER_GID=5008
 USER root
 
 RUN if grep -q '^ID=alpine$' /etc/os-release; then \

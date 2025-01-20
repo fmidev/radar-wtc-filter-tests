@@ -2,7 +2,7 @@ version: "3"
 
 services:
   wtc-masks:
-    user: "1000:1000"
+    user: "7939:5008"
     build: .
     volumes:
       - ./obstacle_data:/obstacle_data
@@ -10,10 +10,11 @@ services:
       - ./src:/src
       - ./turbine_masks:/turbine_masks
       - ./example_radar_files:/example_radar_files
-    # command: python make_wtc_masks.py /config/mask_calculation.yaml
+    # command: python make_wtc_masks.py /config/mask_calculation.yaml --num-skip-rows 0
     entrypoint:
       - /bin/bash
     stdin_open: true # docker run -i
     tty: true # docker run -t
     environment:
       HISTFILE: /.bash_history
+      PYART_QUIET: 1
