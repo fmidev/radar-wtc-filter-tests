@@ -179,8 +179,8 @@ if __name__ == "__main__":
                     compression="gzip",
                     compression_opts=9,
                 )
-                dset.attrs["CLASS"] = np.string_("IMAGE")
-                dset.attrs["IMAGE_VERSION"] = np.string_("1.2")
+                dset.attrs["CLASS"] = np.bytes_("IMAGE")
+                dset.attrs["IMAGE_VERSION"] = np.bytes_("1.2")
                 how = f[f"{dataset}/data1"].require_group("how")
                 what = f[f"{dataset}/data1"].require_group("what")
                 what.attrs["gain"] = 1.0
