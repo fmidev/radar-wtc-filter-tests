@@ -1,0 +1,13 @@
+[project]
+name = "radar-wtc-filter-tests"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "arm-pyart>=1.19.2",
+    "cmcrameri>=1.9",
+    "seaborn>=0.13.2",
+    "wradlib>=2.2.0",
+]
+
