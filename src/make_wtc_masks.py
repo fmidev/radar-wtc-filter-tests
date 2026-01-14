@@ -150,9 +150,20 @@ if __name__ == "__main__":
                     # Add buffer to range and azimuth
                     r_min = max(0, r - buffer_range_before)
                     r_max = min(r + buffer_range_after, mask.shape[1])
-                    a_min = max(0, a - buffer_azim)
-                    a_max = min(a + buffer_azim, mask.shape[0])
-                    mask[a_min:a_max, r_min:r_max] = True
+                    a_min = a - buffer_azim
+                    a_max = a + buffer_azim + 1
+                    
+                    # Handle azimuth wraparound at 360/0 degrees
+                    if a_min < 0 or a_max > mask.shape[0]:
+                        # Wrap around case
+                        if a_min < 0:
+                            mask[a_min:, r_min:r_max] = True
+                            mask[:a_max, r_min:r_max] = True
+                        else:
+                            mask[a_min:, r_min:r_max] = True
+                            mask[:a_max % mask.shape[0], r_min:r_max] = True
+                    else:
+                        mask[a_min:a_max, r_min:r_max] = True
 
             # Save mask
             with h5py.File(mask_path, "a") as f:
