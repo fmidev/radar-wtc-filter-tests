@@ -179,8 +179,8 @@ if __name__ == "__main__":
                 )
                 dset.attrs["CLASS"] = np.bytes_("IMAGE")
                 dset.attrs["IMAGE_VERSION"] = np.bytes_("1.2")
-                how = f[f"{dataset}/data1"].require_group("how")
-                what = f[f"{dataset}/data1"].require_group("what")
+                how = f[f"{dsname}/data1"].require_group("how")
+                what = f[f"{dsname}/data1"].require_group("what")
                 what.attrs["gain"] = 1.0
                 what.attrs["offset"] = 0.0
                 what.attrs["nodata"] = 0.0
