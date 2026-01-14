@@ -11,3 +11,9 @@ dependencies = [
     "wradlib>=2.2.0",
 ]
 
+[project.optional-dependencies]
+test = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+]
+
