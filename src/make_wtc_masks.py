@@ -97,7 +97,6 @@ def get_elevation_buffer(radar_elevs, buffer_config):
     for d in buffer_config:
         if d["elev_interval"][0] <= mean_elev <= d["elev_interval"][1]:
             buffer = d["buffer"]
-            break
     
     return buffer
 
