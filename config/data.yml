@@ -1,5 +1,6 @@
 radar:
-  path: "/mnt/arch/radar/raw/%Y/%m/%d/iris/raw/{radar}/"
+  # path: "/mnt/arch/radar/raw/%Y/%m/%d/iris/raw/{radar}/"
+  path: /example_radar_files/
   fileformat: "%Y%m%d%H%M_{radar}.{task}.raw"
   tasks: [PPI1_A]
   radars: [UTA, KAN, VIM]

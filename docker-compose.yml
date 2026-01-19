@@ -5,11 +5,18 @@ services:
     user: "7939:5008"
     build: .
     volumes:
+      - $HOME/.docker_bash_history:/.bash_history
+      # # IPython history
+      # - $HOME/.ipython/profile_default/:/home/ritvanen/.ipython/profile_default/
+      # # Python history
+      - $HOME/.python_history:/.python_history
+      - $HOME/.pdbhistory:/.pdbhistory
       - ./obstacle_data:/obstacle_data
       - ./config/:/config
       - ./src:/src
       - ./turbine_masks:/turbine_masks
       - ./example_radar_files:/example_radar_files
+      # - /mnt/arch/radar/raw:/mnt/arch/radar/raw
     # command: python make_wtc_masks.py /config/mask_calculation.yaml --num-skip-rows 0
     entrypoint:
       - /bin/bash
