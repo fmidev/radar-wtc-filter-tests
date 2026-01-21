@@ -9,8 +9,6 @@ dependencies = [
     "cmcrameri>=1.9",
     "seaborn>=0.13.2",
     "wradlib>=2.2.0",
-    "pytest>=7.0.0",
-    "pytest-cov>=4.0.0",
 ]
 
 [project.optional-dependencies]
