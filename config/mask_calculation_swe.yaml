@@ -1,0 +1,96 @@
+country: SWE
+example_radar_files:
+  OER:
+    - /example_radar_files_swe/20260205123000_radar.polar.seoer_elang=0.5.h5
+    - /example_radar_files_swe/20260205123000_radar.polar.seoer_elang=14.h5
+    - /example_radar_files_swe/20260205123000_radar.polar.seoer_elang=1.5.h5
+    - /example_radar_files_swe/20260205123000_radar.polar.seoer_elang=1.h5
+    - /example_radar_files_swe/20260205123000_radar.polar.seoer_elang=24.h5
+    - /example_radar_files_swe/20260205123000_radar.polar.seoer_elang=2.5.h5
+    - /example_radar_files_swe/20260205123000_radar.polar.seoer_elang=2.h5
+    - /example_radar_files_swe/20260205123000_radar.polar.seoer_elang=40.h5
+    - /example_radar_files_swe/20260205123000_radar.polar.seoer_elang=4.h5
+    - /example_radar_files_swe/20260205123000_radar.polar.seoer_elang=8.h5
+
+  # ANJ:
+  #   - /example_radar_files/202501200800_fianj_volume_complete_unfiltered.h5
+  #   - /example_radar_files/202501200805_fianj_volume_complete_unfiltered.h5
+  #   - /example_radar_files/202501200810_fianj_volume_complete_unfiltered.h5
+  # KAN:
+  #   - /example_radar_files/202501200800_fikan_volume_complete_unfiltered.h5
+  #   - /example_radar_files/202501200805_fikan_volume_complete_unfiltered.h5
+  #   - /example_radar_files/202501200810_fikan_volume_complete_unfiltered.h5
+  # KES:
+  #   - /example_radar_files/202501200800_fikes_volume_complete_unfiltered.h5
+  #   - /example_radar_files/202501200805_fikes_volume_complete_unfiltered.h5
+  #   - /example_radar_files/202501200810_fikes_volume_complete_unfiltered.h5
+  # KOR:
+  #   - /example_radar_files/202501200800_fikor_volume_complete_unfiltered.h5
+  #   - /example_radar_files/202501200805_fikor_volume_complete_unfiltered.h5
+  #   - /example_radar_files/202501200810_fikor_volume_complete_unfiltered.h5
+  # KUO:
+  #   - /example_radar_files/202501200800_fikuo_volume_complete_unfiltered.h5
+  #   - /example_radar_files/202501200805_fikuo_volume_complete_unfiltered.h5
+  #   - /example_radar_files/202501200810_fikuo_volume_complete_unfiltered.h5
+  # LUO:
+  #   - /example_radar_files/202501200800_filuo_volume_complete_unfiltered.h5
+  #   - /example_radar_files/202501200805_filuo_volume_complete_unfiltered.h5
+  #   - /example_radar_files/202501200810_filuo_volume_complete_unfiltered.h5
+  # NUR:
+  #   - /example_radar_files/202501200800_finur_volume_complete_unfiltered.h5
+  #   - /example_radar_files/202501200805_finur_volume_complete_unfiltered.h5
+  #   - /example_radar_files/202501200810_finur_volume_complete_unfiltered.h5
+  # PET:
+  #   - /example_radar_files/202501200800_fipet_volume_complete_unfiltered.h5
+  #   - /example_radar_files/202501200805_fipet_volume_complete_unfiltered.h5
+  #   - /example_radar_files/202501200810_fipet_volume_complete_unfiltered.h5
+  # UTA:
+  #   - /example_radar_files/202501200800_fiuta_volume_complete_unfiltered.h5
+  #   - /example_radar_files/202501200805_fiuta_volume_complete_unfiltered.h5
+  #   - /example_radar_files/202501200810_fiuta_volume_complete_unfiltered.h5
+  # VIH:
+  #   - /example_radar_files/202501200800_fivih_volume_complete_unfiltered.h5
+  #   - /example_radar_files/202501200805_fivih_volume_complete_unfiltered.h5
+  #   - /example_radar_files/202501200810_fivih_volume_complete_unfiltered.h5
+  # VIM:
+  #   - /example_radar_files/202501200800_fivim_volume_complete_unfiltered.h5
+  #   - /example_radar_files/202501200805_fivim_volume_complete_unfiltered.h5
+  #   - /example_radar_files/202501200810_fivim_volume_complete_unfiltered.h5
+
+# Lentoeste file
+# wind_turbine_list: /obstacle_data/ef_efin_area1_obstdata__2_nov_2023.csv
+# wind_turbine_list: /obstacle_data/ef_efin_area1_obstdata_13_jun_2024.csv
+# wind_turbine_list: /obstacle_data/ef_efin_area1_obstdata_08_aug_2024.csv
+wind_turbine_list: /obstacle_data/LFV_OBSTACLE_DATASET_AREA1_20260122.csv
+
+process_datasets:
+  - dataset1
+  # - dataset2
+  # - dataset3
+  # - dataset4
+  # - dataset5
+  # - dataset6
+  # - dataset7
+  # - dataset8
+  # - dataset9
+  # - dataset10
+  # - dataset11
+  # - dataset12
+  # - dataset13
+  # - dataset14
+
+# Buffer to use around wind turbine
+elev_buffer_degrees:
+  # different buffer values for different elevations
+  - elev_interval: [0.0, 0.2]
+    buffer: 1.0
+  - elev_interval: [0.2, 0.5]
+    buffer: 0.8
+  - elev_interval: [0.5, 10.0]
+    buffer: 1.0
+range_buffer_before_meters: 2000
+range_buffer_after_meters: 8000
+azim_buffer_degrees: 2.0
+
+output_path: /turbine_masks
+output_filename: se{radar_name}_turbine_mask.h5
