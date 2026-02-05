@@ -55,6 +55,48 @@ def load_turbine_data(csv_path, skip_rows=1):
     return turbine_lonlatalt
 
 
+def load_turbine_data_swe(csv_path, skip_rows=1):
+    """
+    Load and filter wind turbine data from CSV file.
+
+    Args:
+        csv_path: Path to CSV file containing turbine data
+        skip_rows: Number of header rows to skip
+
+    Returns:
+        np.ndarray: Array of shape (n_turbines, 3) with [lon, lat, alt] in meters
+
+    Raises:
+        ValueError: If no wind turbines found or elevation column missing
+    """
+    df = pd.read_csv(csv_path, sep=";", skiprows=skip_rows)
+    df = df[df["OBSTACLE_TYPE"] == "WINDMILL"]
+
+    if len(df) == 0:
+        raise ValueError("No wind turbines found in file")
+
+    # Calculate height from HEIGHT and ELEVATION
+    # change HEIGHT TO meters if it is in feet
+    df.loc[df["HEIGHT_UOM"] == "FT", "HEIGHT"] = df[df["HEIGHT_UOM"] == "FT"]["HEIGHT"].astype(float) * 0.3048
+    df.loc[df["ELEVATION_UOM"] == "FT", "ELEVATION"] = (
+        df[df["ELEVATION_UOM"] == "FT"]["ELEVATION"].astype(float) * 0.3048
+    )
+
+    df["ELEV MSL (m)"] = pd.to_numeric(df["ELEVATION"], errors="coerce") + pd.to_numeric(df["HEIGHT"], errors="coerce")
+
+    turbine_lonlatalt = np.array(
+        [
+            df["LONGITUDE_DD"].apply(pd.to_numeric, errors="coerce").values,
+            df["LATITUDE_DD"].apply(pd.to_numeric, errors="coerce").values,
+            df["ELEV MSL (m)"].apply(pd.to_numeric, errors="coerce").values,
+        ]
+    ).T
+    # Filter out turbines with missing data
+    turbine_lonlatalt = turbine_lonlatalt[~np.isnan(turbine_lonlatalt).any(axis=1)]
+
+    return turbine_lonlatalt
+
+
 def convert_turbines_to_radar_coords(turbine_lonlatalt, radar_lonlatalt):
     """
     Convert turbine geographic coordinates to radar spherical coordinates.
@@ -160,6 +202,8 @@ if __name__ == "__main__":
     with open(args.config) as f:
         config = yaml.safe_load(f)
 
+    country = config.get("country", "FIN").upper()
+
     # Read radar objects
     radar_objects = {}
     for radar, files in config["example_radar_files"].items():
@@ -167,19 +211,19 @@ if __name__ == "__main__":
         for file in files:
             for dataset in config["process_datasets"]:
                 try:
-                    radar_objects[radar][(file, dataset)] = pyart.aux_io.read_odim_h5(
-                        file, include_datasets=[dataset]
-                    )
+                    radar_objects[radar][(file, dataset)] = pyart.aux_io.read_odim_h5(file, include_datasets=[dataset])
                 except IndexError:
                     print(f"Dataset {dataset} not found in file {file}, skipping"),
 
     datasets = config["process_datasets"]
 
     # Load turbine locations
-    turbine_lonlatalt = load_turbine_data(
-        config["wind_turbine_list"], 
-        skip_rows=args.num_skip_rows
-    )
+    if country == "FIN":
+        turbine_lonlatalt = load_turbine_data(config["wind_turbine_list"], skip_rows=args.num_skip_rows)
+    elif country == "SWE":
+        turbine_lonlatalt = load_turbine_data_swe(config["wind_turbine_list"], skip_rows=args.num_skip_rows)
+    else:
+        raise ValueError(f"Unsupported country: {country}")
 
     for radar, data in radar_objects.items():
         first_key = list(data.keys())[0]
