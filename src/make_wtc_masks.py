@@ -191,6 +191,30 @@ def apply_turbine_mask(mask, turbine_range, turbine_azim,
         mask[a_min:a_max, r_min:r_max] = True
 
 
+def _c_string(string: str) -> h5py.Datatype:
+    # pylint: disable=c-extension-no-member
+    tid = h5py.h5t.C_S1.copy()
+    tid.set_size(len(string) + 1)
+    tid.set_strpad(h5py.h5t.STR_NULLTERM)
+
+    dtype = h5py.Datatype(tid)
+    return {"data": string, "shape": None, "dtype": dtype}
+
+
+def copy_attributes(src_group, dest_group):
+    for key, value in src_group.attrs.items():
+        if isinstance(value, str):
+            dest_group.attrs.create(key, **_c_string(value))
+        elif isinstance(value, bytes):
+            try:
+                new_str = value.decode("utf8")
+                dest_group.attrs.create(key, **_c_string(new_str))
+            except UnicodeEncodeError:
+                pass
+        else:
+            dest_group.attrs[key] = value
+
+
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
@@ -247,10 +271,12 @@ if __name__ == "__main__":
 
         # Copy metadata from first radar file
         with h5py.File(mask_path, "w") as f_dest, h5py.File(first_key[0], "r") as f_src:
-            # Copy metadata from radar file
-            f_src.copy(f_src["where"], f_dest, "where")
-            f_src.copy(f_src["what"], f_dest, "what")
-            f_src.copy(f_src["how"], f_dest, "how")
+            # copy all attributes from the first dataset's "where", "what", and "how" groups to the new file
+            # There seems to be something different with the Swedish files so that direct copying
+            # with f_src.copy produces corrupted files. Hence copying attributes one by one.
+            for group in ["where", "what", "how"]:
+                f_dest.create_group(group)
+                copy_attributes(f_src[f"/{group}"], f_dest[group])
 
         for (infile, dataset), radar_obj in data.items():
             # Round ranges to data resolution
@@ -299,21 +325,11 @@ if __name__ == "__main__":
                     )
 
             # Save mask
-            with h5py.File(mask_path, "a") as f:
+            with h5py.File(mask_path, "a") as f_mask:
                 # Get output dataset name as the highest dataset number + 1
-                dataset_no = (
-                    max(
-                        [
-                            int(re.findall(r"\d+", d)[0])
-                            for d in f.keys()
-                            if "dataset" in d
-                        ]
-                        + [0]
-                    )
-                    + 1
-                )
+                dataset_no = max([int(re.findall(r"\d+", d)[0]) for d in f_mask.keys() if "dataset" in d] + [0]) + 1
                 dsname = f"dataset{dataset_no}"
-                dset = f.require_dataset(
+                dset = f_mask.require_dataset(
                     f"{dsname}/data1/data",
                     shape=mask.shape,
                     data=mask,
@@ -323,8 +339,8 @@ if __name__ == "__main__":
                 )
                 dset.attrs["CLASS"] = np.bytes_("IMAGE")
                 dset.attrs["IMAGE_VERSION"] = np.bytes_("1.2")
-                how = f[f"{dsname}/data1"].require_group("how")
-                what = f[f"{dsname}/data1"].require_group("what")
+                how = f_mask[f"{dsname}/data1"].require_group("how")
+                what = f_mask[f"{dsname}/data1"].require_group("what")
                 what.attrs["gain"] = 1.0
                 what.attrs["offset"] = 0.0
                 what.attrs["nodata"] = 0.0
@@ -332,6 +348,17 @@ if __name__ == "__main__":
                 what.attrs["undetect"] = 0.0
 
                 with h5py.File(infile, "r") as f_src:
-                    f_src.copy(f_src[f"/{dataset}/where"], f[f"/{dsname}"], "where")
-                    f_src.copy(f_src[f"/{dataset}/what"], f[f"/{dsname}"], "what")
-                    f_src.copy(f_src[f"/{dataset}/how"], f[f"/{dsname}"], "how")
+                    f_mask[f"/{dsname}"].create_group("where")
+                    f_mask[f"/{dsname}"].create_group("what")
+                    f_mask[f"/{dsname}"].create_group("how")
+                    copy_attributes(f_src[f"/{dataset}/where"], f_mask[f"/{dsname}/where"])
+                    copy_attributes(f_src[f"/{dataset}/what"], f_mask[f"/{dsname}/what"])
+
+                    if "how" in f_src[f"/{dataset}"]:
+                        # If how present at dataset level, copy from there
+                        copy_attributes(f_src[f"/{dataset}/how"], f_mask[f"/{dsname}/how"])
+                    elif "/how" in f_src:
+                        # Otherwise copy from file level
+                        copy_attributes(f_src[f"how"], f_mask[f"/{dsname}/how"])
+                    else:
+                        print(f"No 'how' group found to copy in {infile}")
