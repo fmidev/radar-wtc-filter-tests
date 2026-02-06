@@ -163,7 +163,7 @@ class TestEdgeCases:
         """Test that large buffer can cover entire circle."""
         result = apply_azimuth_mask_for_test(180, 180, 360)
         # Should cover all azimuths from 0 to 359
-        assert len(result) == 360 or len(result) == 361, \
+        assert len(result) == 360, \
             f"Expected full coverage, got {len(result)} azimuths"
     
     def test_different_mask_shape(self):
