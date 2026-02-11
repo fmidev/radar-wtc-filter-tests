@@ -12,55 +12,7 @@ example_radar_files:
     - /example_radar_files_swe/20260205123000_radar.polar.seoer_elang=4.h5
     - /example_radar_files_swe/20260205123000_radar.polar.seoer_elang=8.h5
 
-  # ANJ:
-  #   - /example_radar_files/202501200800_fianj_volume_complete_unfiltered.h5
-  #   - /example_radar_files/202501200805_fianj_volume_complete_unfiltered.h5
-  #   - /example_radar_files/202501200810_fianj_volume_complete_unfiltered.h5
-  # KAN:
-  #   - /example_radar_files/202501200800_fikan_volume_complete_unfiltered.h5
-  #   - /example_radar_files/202501200805_fikan_volume_complete_unfiltered.h5
-  #   - /example_radar_files/202501200810_fikan_volume_complete_unfiltered.h5
-  # KES:
-  #   - /example_radar_files/202501200800_fikes_volume_complete_unfiltered.h5
-  #   - /example_radar_files/202501200805_fikes_volume_complete_unfiltered.h5
-  #   - /example_radar_files/202501200810_fikes_volume_complete_unfiltered.h5
-  # KOR:
-  #   - /example_radar_files/202501200800_fikor_volume_complete_unfiltered.h5
-  #   - /example_radar_files/202501200805_fikor_volume_complete_unfiltered.h5
-  #   - /example_radar_files/202501200810_fikor_volume_complete_unfiltered.h5
-  # KUO:
-  #   - /example_radar_files/202501200800_fikuo_volume_complete_unfiltered.h5
-  #   - /example_radar_files/202501200805_fikuo_volume_complete_unfiltered.h5
-  #   - /example_radar_files/202501200810_fikuo_volume_complete_unfiltered.h5
-  # LUO:
-  #   - /example_radar_files/202501200800_filuo_volume_complete_unfiltered.h5
-  #   - /example_radar_files/202501200805_filuo_volume_complete_unfiltered.h5
-  #   - /example_radar_files/202501200810_filuo_volume_complete_unfiltered.h5
-  # NUR:
-  #   - /example_radar_files/202501200800_finur_volume_complete_unfiltered.h5
-  #   - /example_radar_files/202501200805_finur_volume_complete_unfiltered.h5
-  #   - /example_radar_files/202501200810_finur_volume_complete_unfiltered.h5
-  # PET:
-  #   - /example_radar_files/202501200800_fipet_volume_complete_unfiltered.h5
-  #   - /example_radar_files/202501200805_fipet_volume_complete_unfiltered.h5
-  #   - /example_radar_files/202501200810_fipet_volume_complete_unfiltered.h5
-  # UTA:
-  #   - /example_radar_files/202501200800_fiuta_volume_complete_unfiltered.h5
-  #   - /example_radar_files/202501200805_fiuta_volume_complete_unfiltered.h5
-  #   - /example_radar_files/202501200810_fiuta_volume_complete_unfiltered.h5
-  # VIH:
-  #   - /example_radar_files/202501200800_fivih_volume_complete_unfiltered.h5
-  #   - /example_radar_files/202501200805_fivih_volume_complete_unfiltered.h5
-  #   - /example_radar_files/202501200810_fivih_volume_complete_unfiltered.h5
-  # VIM:
-  #   - /example_radar_files/202501200800_fivim_volume_complete_unfiltered.h5
-  #   - /example_radar_files/202501200805_fivim_volume_complete_unfiltered.h5
-  #   - /example_radar_files/202501200810_fivim_volume_complete_unfiltered.h5
-
-# Lentoeste file
-# wind_turbine_list: /obstacle_data/ef_efin_area1_obstdata__2_nov_2023.csv
-# wind_turbine_list: /obstacle_data/ef_efin_area1_obstdata_13_jun_2024.csv
-# wind_turbine_list: /obstacle_data/ef_efin_area1_obstdata_08_aug_2024.csv
+# Lentoeste file for Sweden
 wind_turbine_list: /obstacle_data/LFV_OBSTACLE_DATASET_AREA1_20260122.csv
 
 process_datasets:
