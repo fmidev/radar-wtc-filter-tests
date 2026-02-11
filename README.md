@@ -1,5 +1,25 @@
 # Test code for filtering radar data
 
+## `pre-commit` hooks
+
+This repository uses `pre-commit` hooks to ensure code quality and consistency. To set up the hooks, run the following command in the root of the repository:
+
+```bash
+pre-commit install
+```
+
+If `pre-commit` is not installed, you can install it with pip:
+
+```bash
+pip install pre-commit
+```
+
+To run the hooks manually, use the following command:
+
+```bash
+pre-commit run --all-files
+```
+
 ## Build Docker container
 
 If necessary, update the variables `NEW_MAMBA_USER`, `NEW_MAMBA_USER_ID` and `NEW_MAMBA_GROUP_ID` in the `Dockerfile` to match your user and group ID. This is necessary to ensure that the files created by the container are owned by the user running the container.
