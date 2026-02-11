@@ -1,0 +1,11 @@
+jobs:
+    lint:
+        runs-on: ubuntu-latest
+        container: python:3.10.11
+
+        steps:
+            - name: Install pipx
+              run: pip install pipx
+            - uses: actions/checkout@v3
+            - name: ruff
+              uses: chartboost/ruff-action@v1
