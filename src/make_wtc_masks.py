@@ -75,13 +75,22 @@ def load_turbine_data_swe(csv_path, skip_rows=1):
         raise ValueError("No wind turbines found in file")
 
     # Calculate height from HEIGHT and ELEVATION
-    # change HEIGHT TO meters if it is in feet
-    df.loc[df["HEIGHT_UOM"] == "FT", "HEIGHT"] = df[df["HEIGHT_UOM"] == "FT"]["HEIGHT"].astype(float) * 0.3048
-    df.loc[df["ELEVATION_UOM"] == "FT", "ELEVATION"] = (
-        df[df["ELEVATION_UOM"] == "FT"]["ELEVATION"].astype(float) * 0.3048
-    )
+    df["ELEV MSL (m)"] = 0.0
 
-    df["ELEV MSL (m)"] = pd.to_numeric(df["ELEVATION"], errors="coerce") + pd.to_numeric(df["HEIGHT"], errors="coerce")
+    # Values in feet to meters
+    height_in_ft_mask = df["HEIGHT_UOM"] == "FT"
+    elevation_in_ft_mask = df["ELEVATION_UOM"] == "FT"
+    df.loc[height_in_ft_mask, "ELEV MSL (m)"] += df.loc[height_in_ft_mask, "HEIGHT"].astype(float) * 0.3048
+    df.loc[elevation_in_ft_mask, "ELEV MSL (m)"] += df.loc[elevation_in_ft_mask, "ELEVATION"].astype(float) * 0.3048
+
+    # Values in meters
+    height_in_meters_mask = df["HEIGHT_UOM"] == "M"
+    elevation_in_meters_mask = df["ELEVATION_UOM"] == "M"
+    df.loc[height_in_meters_mask, "ELEV MSL (m)"] += df.loc[height_in_meters_mask, "HEIGHT"].astype(float)
+    df.loc[elevation_in_meters_mask, "ELEV MSL (m)"] += df.loc[elevation_in_meters_mask, "ELEVATION"].astype(float)
+
+    # Change zeros to NaN
+    df["ELEV MSL (m)"] = df["ELEV MSL (m)"].replace(to_replace=0, value=np.nan)
 
     turbine_lonlatalt = np.array(
         [
