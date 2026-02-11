@@ -1,0 +1,12 @@
+lint.select = ["E", "F"]
+lint.ignore = ["F541"]
+exclude = [
+    "build",
+    "dist",
+    ".venv",
+    "obstacle_data",
+]
+line-length = 120
+
+[lint.per-file-ignores]
+".pyart_config.py"= ["F601"]
