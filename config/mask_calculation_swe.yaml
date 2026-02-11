@@ -1,0 +1,48 @@
+country: SWE
+example_radar_files:
+  OER:
+    - /example_radar_files_swe/20260205123000_radar.polar.seoer_elang=0.5.h5
+    - /example_radar_files_swe/20260205123000_radar.polar.seoer_elang=14.h5
+    - /example_radar_files_swe/20260205123000_radar.polar.seoer_elang=1.5.h5
+    - /example_radar_files_swe/20260205123000_radar.polar.seoer_elang=1.h5
+    - /example_radar_files_swe/20260205123000_radar.polar.seoer_elang=24.h5
+    - /example_radar_files_swe/20260205123000_radar.polar.seoer_elang=2.5.h5
+    - /example_radar_files_swe/20260205123000_radar.polar.seoer_elang=2.h5
+    - /example_radar_files_swe/20260205123000_radar.polar.seoer_elang=40.h5
+    - /example_radar_files_swe/20260205123000_radar.polar.seoer_elang=4.h5
+    - /example_radar_files_swe/20260205123000_radar.polar.seoer_elang=8.h5
+
+# Lentoeste file for Sweden
+wind_turbine_list: /obstacle_data/LFV_OBSTACLE_DATASET_AREA1_20260122.csv
+
+process_datasets:
+  - dataset1
+  # - dataset2
+  # - dataset3
+  # - dataset4
+  # - dataset5
+  # - dataset6
+  # - dataset7
+  # - dataset8
+  # - dataset9
+  # - dataset10
+  # - dataset11
+  # - dataset12
+  # - dataset13
+  # - dataset14
+
+# Buffer to use around wind turbine
+elev_buffer_degrees:
+  # different buffer values for different elevations
+  - elev_interval: [0.0, 0.2]
+    buffer: 1.0
+  - elev_interval: [0.2, 0.5]
+    buffer: 0.8
+  - elev_interval: [0.5, 10.0]
+    buffer: 1.0
+range_buffer_before_meters: 2000
+range_buffer_after_meters: 8000
+azim_buffer_degrees: 2.0
+
+output_path: /turbine_masks
+output_filename: se{radar_name}_turbine_mask.h5
