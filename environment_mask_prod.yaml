@@ -10,4 +10,4 @@ dependencies:
   - netcdf4
   - h5py
   - wradlib
-  - pyart
+  - arm_pyart
