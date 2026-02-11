@@ -1,36 +1,25 @@
 """Plot distributions of data"""
+
 # import os
-import itertools
-import sys
-from pathlib import Path
 import argparse
-import random
-import numpy as np
-import pandas as pd
-import xarray as xr
-import yaml
+import itertools
+import logging
+import logging.config
+from datetime import datetime
+from pathlib import Path
 
-import seaborn as sns
-
+import dask
+import h5py
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
-from mpl_toolkits.axes_grid1.inset_locator import inset_axes
-import cmcrameri
-import dask.array as da
-import dask
-import h5py
-from datetime import datetime
-import re
-import pyart
+import numpy as np
+import pandas as pd
+import yaml
 
-import logging
-import logging.config
-
-import plot_utils
 import date_utils
 import filter
-
+import plot_utils
 
 PAIRWISE_QTY_LIST = [
     "DBZH",
@@ -59,9 +48,7 @@ def worker(startdate, enddate, inpath, fileformat, mask, filters=None, n_bins=10
     # Load data
     times = pd.date_range(startdate, enddate, freq="5T", inclusive="both")
 
-    filenames = {
-        t: Path(t.strftime(str(inpath))) / t.strftime(str(fileformat)) for t in times
-    }
+    filenames = {t: Path(t.strftime(str(inpath))) / t.strftime(str(fileformat)) for t in times}
     filenames = {t: f for t, f in filenames.items() if f.exists()}
 
     hists = {}
@@ -76,18 +63,11 @@ def worker(startdate, enddate, inpath, fileformat, mask, filters=None, n_bins=10
             list(radar.fields.keys()),
         )
         if len(missing_variables) > 0:
-            logger.warning(
-                f"Missing variables {missing_variables} in {file}. Skipping."
-            )
+            logger.warning(f"Missing variables {missing_variables} in {file}. Skipping.")
             continue
 
         for fieldname in radar.fields.keys():
-
-            odim_qty = [
-                k
-                for k in plot_utils.PYART_FIELDS.keys()
-                if plot_utils.PYART_FIELDS[k] == fieldname
-            ][0]
+            odim_qty = [k for k in plot_utils.PYART_FIELDS.keys() if plot_utils.PYART_FIELDS[k] == fieldname][0]
 
             field = radar.fields[fieldname]["data"]
 
@@ -137,14 +117,11 @@ def worker(startdate, enddate, inpath, fileformat, mask, filters=None, n_bins=10
 
 
 def main(startdate, enddate, conf, main_outpath, filters=None, nworkers=1):
-
     args = []
     for radar in conf["radar"]["radars"]:
         for task in conf["radar"]["tasks"]:
             inpath = Path(conf["radar"]["path"].format(radar=radar))
-            fileformat = Path(
-                conf["radar"]["fileformat"].format(radar=radar, task=task)
-            )
+            fileformat = Path(conf["radar"]["fileformat"].format(radar=radar, task=task))
 
             outpath = Path(main_outpath) / radar
             outpath.mkdir(parents=True, exist_ok=True)
@@ -164,8 +141,7 @@ def main(startdate, enddate, conf, main_outpath, filters=None, nworkers=1):
 
     scheduler = "multiprocessing" if nworkers > 1 else "single-threaded"
     # Run in parallel
-    for (inpath, fileformat, outpath, mask) in args:
-
+    for inpath, fileformat, outpath, mask in args:
         date_ranges = date_utils.get_chunked_date_range(
             startdate,
             enddate,
@@ -176,11 +152,7 @@ def main(startdate, enddate, conf, main_outpath, filters=None, nworkers=1):
 
         res = []
         for dr in date_ranges:
-            res.append(
-                worker(
-                    dr[0], dr[1], inpath, fileformat, mask, filters=filters, n_bins=100
-                )
-            )
+            res.append(worker(dr[0], dr[1], inpath, fileformat, mask, filters=filters, n_bins=100))
 
         results = dask.compute(
             *res,
@@ -213,8 +185,7 @@ def main(startdate, enddate, conf, main_outpath, filters=None, nworkers=1):
                 bins[qty],
             )
             np.save(
-                outpath
-                / f"{qty}_{startdate:%Y%m%d%H%M}_{enddate:%Y%m%d%H%M}_counts.npy",
+                outpath / f"{qty}_{startdate:%Y%m%d%H%M}_{enddate:%Y%m%d%H%M}_counts.npy",
                 counts[qty],
             )
 
@@ -258,19 +229,15 @@ def main(startdate, enddate, conf, main_outpath, filters=None, nworkers=1):
                 ax.xaxis.set_minor_locator(ticker.MultipleLocator(0.05))
 
         for ax in axes.flat[:num_plotted_axes]:
-
             # ax.xaxis.set_major_locator(ticker.MultipleLocator(20))
             # ax.xaxis.set_minor_locator(ticker.MultipleLocator(5))
             # ax.xaxis.set_major_formatter(ticker.ScalarFormatter(useMathText=True))
             # ax.xaxis.set_minor_formatter(ticker.NullFormatter())
 
-
             ax.yaxis.set_major_locator(ticker.LogLocator(base=10.0))
             ax.set_ylim(bottom=0)
             ax.grid(which="major", lw=0.5, color="tab:gray", ls="-", zorder=0)
-            ax.grid(
-                which="minor", lw=0.5, color="tab:gray", ls="-", alpha=0.1, zorder=0
-            )
+            ax.grid(which="minor", lw=0.5, color="tab:gray", ls="-", alpha=0.1, zorder=0)
 
             ax.set_yscale("log")
             ax.set_ylabel("Count")
@@ -278,9 +245,7 @@ def main(startdate, enddate, conf, main_outpath, filters=None, nworkers=1):
         for ax in axes.flat[num_plotted_axes:]:
             ax.axis("off")
 
-        outfile = (
-            outpath / f"histograms_{startdate:%Y%m%d%H%M}_{enddate:%Y%m%d%H%M}.png"
-        )
+        outfile = outpath / f"histograms_{startdate:%Y%m%d%H%M}_{enddate:%Y%m%d%H%M}.png"
         outfile.parents[0].mkdir(parents=True, exist_ok=True)
         fig.savefig(outfile, dpi=600, bbox_inches="tight")
 
@@ -307,13 +272,13 @@ def main(startdate, enddate, conf, main_outpath, filters=None, nworkers=1):
         hist_cmap = plt.get_cmap(hist_cmap, num_c)
         hist_norm = mpl.colors.BoundaryNorm(bounds, hist_cmap.N)
 
-        cbar_ax_kws = {
-            "width": "3%",  # width = 5% of parent_bbox width
-            "height": "100%",
-            "loc": "lower left",
-            "bbox_to_anchor": (1.01, 0.0, 1, 1),
-            "borderpad": 0,
-        }
+        # cbar_ax_kws = {
+        #     "width": "3%",  # width = 5% of parent_bbox width
+        #     "height": "100%",
+        #     "loc": "lower left",
+        #     "bbox_to_anchor": (1.01, 0.0, 1, 1),
+        #     "borderpad": 0,
+        # }
 
         for i, fieldname in enumerate(pair_var_keys):
             qty1, qty2 = fieldname.split("_")
@@ -367,9 +332,7 @@ def main(startdate, enddate, conf, main_outpath, filters=None, nworkers=1):
                 ax.yaxis.set_minor_locator(ticker.MultipleLocator(0.05))
 
             ax.grid(which="major", lw=0.5, color="tab:gray", ls="-", zorder=0)
-            ax.grid(
-                which="minor", lw=0.5, color="tab:gray", ls="-", alpha=0.5, zorder=0
-            )
+            ax.grid(which="minor", lw=0.5, color="tab:gray", ls="-", alpha=0.5, zorder=0)
 
         for i in range(nrows):
             for j in range(ncols):
@@ -378,10 +341,7 @@ def main(startdate, enddate, conf, main_outpath, filters=None, nworkers=1):
 
         # fig.subplots_adjust(wspace=1, hspace=0.1)
         fig.subplots_adjust(wspace=2.0, hspace=0.4)
-        outfile = (
-            outpath
-            / f"histograms_pairs_{startdate:%Y%m%d%H%M}_{enddate:%Y%m%d%H%M}.png"
-        )
+        outfile = outpath / f"histograms_pairs_{startdate:%Y%m%d%H%M}_{enddate:%Y%m%d%H%M}.png"
         outfile.parents[0].mkdir(parents=True, exist_ok=True)
         fig.savefig(outfile, dpi=600)  # , bbox_inches="tight")
 
@@ -395,28 +355,19 @@ def main(startdate, enddate, conf, main_outpath, filters=None, nworkers=1):
             ticks=mpl.ticker.LogLocator(),
         )
         cbar.set_label("Frequency", labelpad=-1)
-        outfile = (
-            outpath
-            / f"histograms_pairs_colorbar_{startdate:%Y%m%d%H%M}_{enddate:%Y%m%d%H%M}.png"
-        )
+        outfile = outpath / f"histograms_pairs_colorbar_{startdate:%Y%m%d%H%M}_{enddate:%Y%m%d%H%M}.png"
         outfile.parents[0].mkdir(parents=True, exist_ok=True)
         fig.savefig(outfile, dpi=600, bbox_inches="tight")
 
 
 if __name__ == "__main__":
-    argparser = argparse.ArgumentParser(
-        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
-    )
+    argparser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     argparser.add_argument("startdate", type=str, help="Start date")
     argparser.add_argument("enddate", type=str, help="End date")
     argparser.add_argument("confpath", type=str, help="Configuration file path")
     argparser.add_argument("outpath", type=str, help="Output file path")
-    argparser.add_argument(
-        "-n", "--nworkers", default=1, type=int, help="Number of workers"
-    )
-    argparser.add_argument(
-        "-f", "--filter", type=str, default=None, help="Filter configuration file"
-    )
+    argparser.add_argument("-n", "--nworkers", default=1, type=int, help="Number of workers")
+    argparser.add_argument("-f", "--filter", type=str, default=None, help="Filter configuration file")
     args = argparser.parse_args()
 
     # Load configuration from yaml file
@@ -435,6 +386,4 @@ if __name__ == "__main__":
         filter_funcs = None
 
     plt.style.use("distributions.mplstyle")
-    main(
-        startdate, enddate, conf, outpath, filters=filter_funcs, nworkers=args.nworkers
-    )
+    main(startdate, enddate, conf, outpath, filters=filter_funcs, nworkers=args.nworkers)

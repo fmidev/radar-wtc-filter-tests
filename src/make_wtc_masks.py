@@ -5,12 +5,12 @@ import os
 import re
 from pathlib import Path
 
+import h5py
 import numpy as np
 import pandas as pd
-import h5py
 import pyart
-import yaml
 import wradlib as wrl
+import yaml
 
 pyart.load_config(os.environ.get("PYART_CONFIG"))
 
@@ -231,7 +231,7 @@ if __name__ == "__main__":
                 try:
                     radar_objects[radar][(file, dataset)] = pyart.aux_io.read_odim_h5(file, include_datasets=[dataset])
                 except IndexError:
-                    print(f"Dataset {dataset} not found in file {file}, skipping"),
+                    print(f"Dataset {dataset} not found in file {file}, skipping")
 
     datasets = config["process_datasets"]
 
@@ -337,6 +337,6 @@ if __name__ == "__main__":
                         copy_attributes(f_src[f"/{dataset}/how"], f_mask[f"/{dsname}/how"])
                     elif "/how" in f_src:
                         # Otherwise copy from file level
-                        copy_attributes(f_src[f"how"], f_mask[f"/{dsname}/how"])
+                        copy_attributes(f_src["how"], f_mask[f"/{dsname}/how"])
                     else:
                         print(f"No 'how' group found to copy in {infile}")

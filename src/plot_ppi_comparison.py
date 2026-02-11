@@ -1,29 +1,25 @@
 """Plot comparison of filtered and unfiltered PPIs."""
+
 import argparse
 import os
 import re
-from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
 
+import h5py
 import matplotlib.pyplot as plt
 import numpy as np
-import h5py
 import pyart
-import utils
 import yaml
-from scipy.ndimage import generic_filter
-
-pyart.load_config(os.environ.get("PYART_CONFIG"))
 
 import filter
 import utils
 
+pyart.load_config(os.environ.get("PYART_CONFIG"))
+
 
 if __name__ == "__main__":
-    argparser = argparse.ArgumentParser(
-        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
-    )
+    argparser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     argparser.add_argument("inpath", type=str, help="File input path")
     argparser.add_argument("filterconfig", type=str, help="Path to filter config file")
     argparser.add_argument("outpath", type=str, help="File output path")
@@ -60,8 +56,7 @@ if __name__ == "__main__":
     )
 
     files = {
-        datetime.strptime(p.name.split("_")[0], filename_pattern.split("_")[0]): p
-        for p in inpath.glob(filename_glob)
+        datetime.strptime(p.name.split("_")[0], filename_pattern.split("_")[0]): p for p in inpath.glob(filename_glob)
     }
     files = dict(sorted(files.items()))
 
@@ -73,7 +68,6 @@ if __name__ == "__main__":
     outpath.mkdir(exist_ok=True, parents=True)
 
     for timestamp, fn in files.items():
-
         # Original data
         radar = pyart.io.read(fn)
         # Find task name
@@ -81,14 +75,9 @@ if __name__ == "__main__":
 
         # Find mask dataset
         if args.mask is not None:
-
             with h5py.File(args.mask, "r") as f:
-
                 mask_dataset = [
-                    k
-                    for k in f.keys()
-                    if k.startswith("dataset")
-                    and f[f"{k}/how"].attrs["task"].decode() == task_name
+                    k for k in f.keys() if k.startswith("dataset") and f[f"{k}/how"].attrs["task"].decode() == task_name
                 ][0]
 
                 mask = f[f"{mask_dataset}/data1/data"][...]

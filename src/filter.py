@@ -1,13 +1,7 @@
 import os
-from copy import deepcopy
-from datetime import datetime
-from pathlib import Path
 
-import matplotlib.pyplot as plt
 import numpy as np
-import h5py
 import pyart
-import utils
 import yaml
 from scipy.ndimage import generic_filter
 
@@ -98,9 +92,7 @@ def read_and_filter_radar(filename, filters=None, mask_field=None):
     if mask_field is not None:
         if mask_field.shape != radar.fields["cross_correlation_ratio"]["data"].shape:
             # expand mask to full size in range dimension with fill value nan
-            mask_field_ = np.full_like(
-                radar.fields["cross_correlation_ratio"]["data"], np.nan
-            )
+            mask_field_ = np.full_like(radar.fields["cross_correlation_ratio"]["data"], np.nan)
             mask_field_[:, 0 : mask_field.shape[1]] = mask_field.copy()
             mask_field = mask_field_
 

@@ -47,7 +47,7 @@ Tests the azimuth buffer calculation and wraparound handling logic from `make_wt
 - `TestAzimuthWraparound`: Tests wraparound at 0°/360° boundary
   - Tests turbines at azimuths 0°, 1°, 358°, 359° with various buffers
   - Validates proper handling when buffer extends across the boundary
-  
+
 - `TestBufferSymmetry`: Parametrized tests for consistency
   - Tests 7 different azimuths (0, 1, 90, 180, 270, 358, 359)
   - Tests 5 different buffer sizes (0, 1, 2, 5, 10)
@@ -84,7 +84,7 @@ Example:
 ```python
 class TestNewFeature:
     """Test the new feature description."""
-    
+
     def test_feature_basic_case(self):
         """Test that basic case works as expected."""
         result = my_function(input_data)

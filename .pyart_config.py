@@ -104,9 +104,7 @@ height_over_iso0 = "height_over_iso0"
 
 # path integrated attenuation
 path_integrated_attenuation = "path_integrated_attenuation"
-path_integrated_differential_attenuation = (
-    "path_integrated" + "differential_attenuation"
-)
+path_integrated_differential_attenuation = "path_integrated" + "differential_attenuation"
 
 # End of Simple Configuration section
 
@@ -293,10 +291,7 @@ DEFAULT_METADATA = {
     "rays_are_indexed": {
         "long_name": "Flag for indexed rays",
         "units": "unitless",
-        "options": (
-            "true: rays are indexed to a regular grid, "
-            + "false: rays are not indexed to a regular grid"
-        ),
+        "options": ("true: rays are indexed to a regular grid, " + "false: rays are not indexed to a regular grid"),
     },
     "ray_angle_res": {
         "long_name": "Angular resolution between rays",
@@ -352,10 +347,7 @@ DEFAULT_METADATA = {
     "gate_altitude": {"long_name": "Altitude of radar gate", "units": "meters"},
     # Metadata for instrument_parameter dictionary
     "prt_mode": {
-        "comments": (
-            'Pulsing mode Options are: "fixed", "staggered", '
-            '"dual". Assumed "fixed" if missing.'
-        ),
+        "comments": ('Pulsing mode Options are: "fixed", "staggered", ' '"dual". Assumed "fixed" if missing.'),
         "meta_group": "instrument_parameters",
         "long_name": "Pulsing mode",
         "units": "unitless",
@@ -368,9 +360,7 @@ DEFAULT_METADATA = {
     },
     "prt": {
         "units": "seconds",
-        "comments": (
-            "Pulse repetition time. For staggered prt, " "also see prt_ratio."
-        ),
+        "comments": ("Pulse repetition time. For staggered prt, " "also see prt_ratio."),
         "meta_group": "instrument_parameters",
         "long_name": "Pulse repetition time",
     },
@@ -484,9 +474,7 @@ DEFAULT_METADATA = {
     },
     corrected_velocity: {
         "units": "meters_per_second",
-        "standard_name": (
-            "corrected_radial_velocity_of_scatterers_away_from_instrument"
-        ),
+        "standard_name": ("corrected_radial_velocity_of_scatterers_away_from_instrument"),
         "long_name": "Corrected mean doppler velocity",
         "coordinates": "elevation azimuth range",
     },

@@ -5,13 +5,14 @@ from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
 
+import h5py
 import matplotlib.pyplot as plt
 import numpy as np
-import h5py
 import pyart
-import utils
 import yaml
 from scipy.ndimage import generic_filter
+
+import utils
 
 pyart.load_config(os.environ.get("PYART_CONFIG"))
 
@@ -110,9 +111,7 @@ def calculate_accumulation(
     n_objs = len(radars)
 
     for field in fields:
-        accum_obj.fields[field]["data"] = np.ma.zeros_like(
-            accum_obj.fields[field]["data"]
-        )
+        accum_obj.fields[field]["data"] = np.ma.zeros_like(accum_obj.fields[field]["data"])
 
         for radar in radars:
             try:
@@ -128,15 +127,11 @@ def calculate_accumulation(
 
 
 if __name__ == "__main__":
-    argparser = argparse.ArgumentParser(
-        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
-    )
+    argparser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     argparser.add_argument("inpath", type=str, help="File input path")
     argparser.add_argument("filterconfig", type=str, help="Path to filter config file")
     argparser.add_argument("outpath", type=str, help="File output path")
-    argparser.add_argument(
-        "--no-filter", action="store_true", help="Do not apply filters"
-    )
+    argparser.add_argument("--no-filter", action="store_true", help="Do not apply filters")
     argparser.add_argument(
         "--filepattern",
         "-f",
@@ -145,9 +140,7 @@ if __name__ == "__main__":
         help="Filename pattern",
     )
     argparser.add_argument("-m", "--mask", type=str, help="Mask file")
-    argparser.add_argument(
-        "--mask-group", type=str, default="dataset1/data1", help="Mask group"
-    )
+    argparser.add_argument("--mask-group", type=str, default="dataset1/data1", help="Mask group")
     args = argparser.parse_args()
 
     inpath = Path(args.inpath)
@@ -164,8 +157,7 @@ if __name__ == "__main__":
     )
 
     files = {
-        datetime.strptime(p.name.split("_")[0], filename_pattern.split("_")[0]): p
-        for p in inpath.glob(filename_glob)
+        datetime.strptime(p.name.split("_")[0], filename_pattern.split("_")[0]): p for p in inpath.glob(filename_glob)
     }
     files = dict(sorted(files.items()))
 
