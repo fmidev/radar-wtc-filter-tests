@@ -1,11 +1,11 @@
-import pyart
-import numpy as np
+from datetime import datetime
+from pathlib import Path
+
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-from matplotlib import cm
-from datetime import datetime
+import numpy as np
+import pyart
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
-from pathlib import Path
 
 import plot_utils
 
@@ -46,21 +46,14 @@ def plot_ppi_comparison(
 
     display_orig = pyart.graph.RadarDisplay(radar_orig)
     display_filt = pyart.graph.RadarDisplay(radar_filt)
-    time = datetime.strptime(
-        radar_orig.time["units"], "seconds since %Y-%m-%dT%H:%M:%SZ"
-    )
+    time = datetime.strptime(radar_orig.time["units"], "seconds since %Y-%m-%dT%H:%M:%SZ")
     fmt = mpl.ticker.StrMethodFormatter("{x:.0f}")
 
     if markers is not None:
-        markers = [
-            (*get_radar_coords(float(m[0]), float(m[1]), radar_orig), m[2], m[3])
-            for m in markers
-        ]
+        markers = [(*get_radar_coords(float(m[0]), float(m[1]), radar_orig), m[2], m[3]) for m in markers]
 
     for qi, qty in enumerate(qtys):
-        axs = subfigs[qi, 0].subplots(
-            nrows=1, ncols=ncols, squeeze=True, sharey=True, sharex=True
-        )
+        axs = subfigs[qi, 0].subplots(nrows=1, ncols=ncols, squeeze=True, sharey=True, sharex=True)
         cax = inset_axes(axs[-1], bbox_transform=axs[-1].transAxes, **cbar_ax_kws)
 
         if "VRAD" in qty:
@@ -74,9 +67,7 @@ def plot_ppi_comparison(
 
         if norm is None:
             # define the bins and normalize
-            bounds = np.linspace(
-                plot_utils.QTY_RANGES[qty][0], plot_utils.QTY_RANGES[qty][1], 40
-            )
+            bounds = np.linspace(plot_utils.QTY_RANGES[qty][0], plot_utils.QTY_RANGES[qty][1], 40)
             norm = mpl.colors.BoundaryNorm(boundaries=bounds, ncolors=len(bounds))
             cmap = plt.get_cmap(cmap, len(bounds))
         elif isinstance(norm, mpl.colors.BoundaryNorm):
@@ -92,19 +83,14 @@ def plot_ppi_comparison(
         )
         cbar.set_label(label=plot_utils.COLORBAR_TITLES[qty], weight="bold")
 
-        for radar, display, ax in zip(
-            [radar_orig, radar_filt], [display_orig, display_filt], axs.flat
-        ):
-
+        for radar, display, ax in zip([radar_orig, radar_filt], [display_orig, display_filt], axs.flat):
             if qty == "HCLASS":
                 plot_utils.set_HCLASS_cbar(cbar)
 
                 # Set 0-values as nan to prevent them from being plotted with same color as 1
                 radar.fields["radar_echo_classification"]["data"].set_fill_value(np.nan)
 
-                radar.radar_fields["radar_echo_classification"][
-                    "data"
-                ] = np.ma.masked_values(
+                radar.radar_fields["radar_echo_classification"]["data"] = np.ma.masked_values(
                     radar.radar_fields["radar_echo_classification"]["data"], 0
                 )
 
@@ -283,10 +269,7 @@ def plot_ppi_fig(
     fmt = mpl.ticker.StrMethodFormatter("{x:.0f}")
 
     if markers is not None:
-        markers = [
-            (*get_radar_coords(float(m[0]), float(m[1]), radar), m[2], m[3])
-            for m in markers
-        ]
+        markers = [(*get_radar_coords(float(m[0]), float(m[1]), radar), m[2], m[3]) for m in markers]
 
     for ax, qty in zip(axes.flat, qtys):
         cax = inset_axes(ax, bbox_transform=ax.transAxes, **cbar_ax_kws)
@@ -302,9 +285,7 @@ def plot_ppi_fig(
 
         if norm is None:
             # define the bins and normalize
-            bounds = np.linspace(
-                plot_utils.QTY_RANGES[qty][0], plot_utils.QTY_RANGES[qty][1], 40
-            )
+            bounds = np.linspace(plot_utils.QTY_RANGES[qty][0], plot_utils.QTY_RANGES[qty][1], 40)
             norm = mpl.colors.BoundaryNorm(boundaries=bounds, ncolors=len(bounds))
             cmap = plt.get_cmap(cmap, len(bounds))
         elif isinstance(norm, mpl.colors.BoundaryNorm):

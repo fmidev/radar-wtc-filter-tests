@@ -1,0 +1,12 @@
+name: base
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python
+  - numpy
+  - scipy
+  - pandas
+  - netcdf4
+  - h5py
+  - wradlib

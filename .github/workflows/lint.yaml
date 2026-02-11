@@ -1,0 +1,18 @@
+on:
+    push:
+    pull_request:
+        branches:
+            - main
+            - develop
+
+jobs:
+    lint:
+        runs-on: ubuntu-latest
+        container: python:3.10.11
+
+        steps:
+            - name: Install pipx
+              run: pip install pipx
+            - uses: actions/checkout@v3
+            - name: ruff
+              uses: astral-sh/ruff-action@v3

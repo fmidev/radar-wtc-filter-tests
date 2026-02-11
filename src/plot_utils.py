@@ -1,4 +1,5 @@
 """Utility functions."""
+
 import os
 import re
 import struct
@@ -8,7 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import pyart
-from cmcrameri import cm as cm_crameri
+from cmcrameri import cm as cm_crameri  # noqa
 from matplotlib import cm, colors
 from pyart.io.sigmet import SigmetFile
 
@@ -97,7 +98,6 @@ QTY_FORMATS = {
     "tdwr_gfda": "{x:.0f}",
     "PMI": "{x:.2f}",
     "CSP": "{x:.0f}",
-    "LOG": "{x:.0f}",
 }
 
 
@@ -124,7 +124,6 @@ QTY_RANGES = {
     "tdwr_gfda": (-1, 1),
     "PMI": (0, 1),
     "CSP": (-20, 50),
-    "LOG": (-20, 50),
 }
 
 COLORBAR_TITLES = {
@@ -142,7 +141,7 @@ COLORBAR_TITLES = {
     "WRAD": "Doppler spectrum width [m s$^{-1}$",
     "ZDR": "Differential reflectivity [dB]",
     "SNR": "Signal-to-noise ratio [dB]",
-    "LOG": "LOG signal-to-noise ratio [dB]",
+    "LOG": "LOG receiver signal-to-noise ratio [dB]",
     # "radial_wind_speed": "Doppler velocity [m s$^{-1}$]",
     "cnr": "Carrier-to-noise ratio [dB]",
     "wind_shear": "Wind shear [m s$^{-1}$ km$^{-1}$]",
@@ -152,7 +151,6 @@ COLORBAR_TITLES = {
     "tdwr_gfda": "TWDR gust front segments",
     "PMI": "Polarimetric meteo index",
     "CSP": "Clutter power ratio of dBT to -dBZ [dB]",
-    "LOG": "Log receiver signal-to-noise ratio [dB]",
 }
 
 TITLES = {
@@ -174,9 +172,7 @@ TITLES = {
     "wind_shear": "Wind shear",
     "total_shear": "Wind shear",
     "tdwr_gfda": "Wind shear",
-    "PMI": "PMI",
     "CSP": "CSP",
-    "LOG": "LOG",
 }
 
 for name, alias_list in alias_names.items():
@@ -193,9 +189,7 @@ for name, alias_list in alias_names.items():
 
 def get_colormap(quantity):
     if quantity == "HCLASS":
-        cmap = colors.ListedColormap(
-            ["peru", "dodgerblue", "blue", "cyan", "yellow", "red"]
-        )
+        cmap = colors.ListedColormap(["peru", "dodgerblue", "blue", "cyan", "yellow", "red"])
         norm = colors.BoundaryNorm(np.arange(0.5, 7.5), cmap.N)
     elif "VRAD" in quantity or quantity in alias_names["VRAD"]:
         # cmap = "pyart_BuDRd18"
@@ -236,15 +230,11 @@ def get_colormap(quantity):
         norm = colors.BoundaryNorm(boundaries=bounds, ncolors=len(bounds))
         cmap = cm.get_cmap("viridis", len(bounds))
     elif quantity == "PMI":
-        bounds = np.arange(
-            QTY_RANGES[quantity][0], QTY_RANGES[quantity][1] + 0.01, 0.05
-        )
+        bounds = np.arange(QTY_RANGES[quantity][0], QTY_RANGES[quantity][1] + 0.01, 0.05)
         norm = colors.BoundaryNorm(boundaries=bounds, ncolors=len(bounds))
         cmap = cm.get_cmap("cmc.hawaii", len(bounds))
     elif quantity == "SQI":
-        bounds = np.arange(
-            QTY_RANGES[quantity][0], QTY_RANGES[quantity][1] + 0.01, 0.05
-        )
+        bounds = np.arange(QTY_RANGES[quantity][0], QTY_RANGES[quantity][1] + 0.01, 0.05)
         norm = colors.BoundaryNorm(boundaries=bounds, ncolors=len(bounds))
         cmap = cm.get_cmap("cmc.hawaii", len(bounds))
     elif quantity in ["wind_shear", *alias_names["wind_shear"]]:
@@ -289,9 +279,7 @@ def get_HCLASS_labels():
     ]
 
 
-def get_sigmet_file_list_by_task(
-    path, file_regex="WRS([0-9]{12}).RAW([A-Z0-9]{4})", task_name=None
-):
+def get_sigmet_file_list_by_task(path, file_regex="WRS([0-9]{12}).RAW([A-Z0-9]{4})", task_name=None):
     """Generate a list of files by task.
 
     Parameters
@@ -315,7 +303,7 @@ def get_sigmet_file_list_by_task(
 
     data = []
 
-    for (root, dirs, files) in os.walk(fullpath):
+    for root, dirs, files in os.walk(fullpath):
         addpath = root.replace(fullpath, "")
 
         for f in files:
@@ -327,11 +315,7 @@ def get_sigmet_file_list_by_task(
             try:
                 # Get task name from headers
                 sf = pyart.io.sigmet.SigmetFile(os.path.join(root, f))
-                task = (
-                    sf.product_hdr["product_configuration"]["task_name"]
-                    .decode()
-                    .strip()
-                )
+                task = sf.product_hdr["product_configuration"]["task_name"].decode().strip()
                 sf.close()
                 if task_name is not None and task != task_name:
                     continue
@@ -364,12 +348,7 @@ def add_estimated_SNR(fn, radar):
     sigmet_file = SigmetFile(fn)
 
     # Get reflectivity calibration value
-    NEZ = (
-        sigmet_file.ingest_header["task_configuration"]["task_calib_info"][
-            "reflectivity_calibration"
-        ]
-        / 16
-    )
+    NEZ = sigmet_file.ingest_header["task_configuration"]["task_calib_info"]["reflectivity_calibration"] / 16
     # Ranges in the same shape as data
     R = np.tile(radar.range["data"], (radar.nrays, 1)) * 1e-3
     # Estimated SNR
