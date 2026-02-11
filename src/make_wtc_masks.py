@@ -246,6 +246,7 @@ if __name__ == "__main__":
     for radar, data in radar_objects.items():
         first_key = list(data.keys())[0]
         # Get radar coordinates
+        # Get radar coordinates
         radar_lonlatalt = np.array(
             [
                 data[first_key].longitude["data"].item(),
@@ -286,6 +287,7 @@ if __name__ == "__main__":
             elev_buffer = get_elevation_buffer(radar_elevs, config["elev_buffer_degrees"])
             selected_turbines_elev = filter_turbines_by_elevation(elevs_, radar_elevs, elev_buffer)
 
+            # Calculate buffer sizes
             # Calculate buffer sizes
             buffer_range_before = int(
                 np.ceil(config["range_buffer_before_meters"] / radar_obj.range["meters_between_gates"])
