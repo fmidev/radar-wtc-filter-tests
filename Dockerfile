@@ -27,7 +27,7 @@ USER $MAMBA_USER
 
 # Create conda environment
 ENV conda_env base
-COPY --chown=$MAMBA_USER:$MAMBA_USER environment.yaml /tmp/env.yaml
+COPY --chown=$MAMBA_USER:$MAMBA_USER environment_mask_prod.yaml /tmp/env.yaml
 ENV PYTHONDONTWRITEBYTECODE=true
 # For reference for cleanup, see https://uwekorn.com/2021/03/01/deploying-conda-environments-in-docker-how-to-do-it-right.html
 # and https://jcristharif.com/conda-docker-tips.html
