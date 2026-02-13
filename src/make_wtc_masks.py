@@ -78,15 +78,15 @@ def load_turbine_data_swe(csv_path, skip_rows=1):
     df["ELEV MSL (m)"] = 0.0
 
     # Values in feet to meters
-    height_in_ft_mask = df["HEIGHT_UOM"] == "FT"
+    # height_in_ft_mask = df["HEIGHT_UOM"] == "FT"
     elevation_in_ft_mask = df["ELEVATION_UOM"] == "FT"
-    df.loc[height_in_ft_mask, "ELEV MSL (m)"] += df.loc[height_in_ft_mask, "HEIGHT"].astype(float) * 0.3048
+    # df.loc[height_in_ft_mask, "ELEV MSL (m)"] += df.loc[height_in_ft_mask, "HEIGHT"].astype(float) * 0.3048
     df.loc[elevation_in_ft_mask, "ELEV MSL (m)"] += df.loc[elevation_in_ft_mask, "ELEVATION"].astype(float) * 0.3048
 
     # Values in meters
-    height_in_meters_mask = df["HEIGHT_UOM"] == "M"
+    # height_in_meters_mask = df["HEIGHT_UOM"] == "M"
     elevation_in_meters_mask = df["ELEVATION_UOM"] == "M"
-    df.loc[height_in_meters_mask, "ELEV MSL (m)"] += df.loc[height_in_meters_mask, "HEIGHT"].astype(float)
+    # df.loc[height_in_meters_mask, "ELEV MSL (m)"] += df.loc[height_in_meters_mask, "HEIGHT"].astype(float)
     df.loc[elevation_in_meters_mask, "ELEV MSL (m)"] += df.loc[elevation_in_meters_mask, "ELEVATION"].astype(float)
 
     # Change zeros to NaN
