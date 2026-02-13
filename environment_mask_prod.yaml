@@ -11,3 +11,4 @@ dependencies:
   - h5py
   - wradlib
   - arm_pyart
+  - xlrd
