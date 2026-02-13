@@ -105,6 +105,48 @@ def load_turbine_data_swe(csv_path, skip_rows=1):
     return turbine_lonlatalt
 
 
+def load_turbine_data_est(csv_path, skip_rows=1):
+    """
+    Load and filter wind turbine data from CSV file.
+
+    Args:
+        csv_path: Path to CSV file containing turbine data
+        skip_rows: Number of header rows to skip
+
+    Returns:
+        np.ndarray: Array of shape (n_turbines, 3) with [lon, lat, alt] in meters
+
+    Raises:
+        ValueError: If no wind turbines found or elevation column missing
+    """
+
+    df = pd.read_excel(csv_path, sheet_name="ENR 5.4_Points", skiprows=3)
+    df = df[df["Type"] == "WINDMILL"]
+
+    if len(df) == 0:
+        raise ValueError("No wind turbines found in file")
+
+    # Calculate height from HEIGHT and ELEVATION
+    # Values in feet to meters
+    if "ELEV MSL (m)" not in df.columns and "Elevation (FT)" in df.columns:
+        # Transform from feet to meters
+        df["ELEV MSL (m)"] = df["Elevation (FT)"].apply(pd.to_numeric, errors="coerce") * 0.3048
+    else:
+        raise ValueError("Elevation column not found")
+
+    turbine_lonlatalt = np.array(
+        [
+            df["Longitude_DEG"].apply(pd.to_numeric, errors="coerce").values,
+            df["Latitude_DEG"].apply(pd.to_numeric, errors="coerce").values,
+            df["ELEV MSL (m)"].apply(pd.to_numeric, errors="coerce").values,
+        ]
+    ).T
+    # Filter out turbines with missing data
+    turbine_lonlatalt = turbine_lonlatalt[~np.isnan(turbine_lonlatalt).any(axis=1)]
+
+    return turbine_lonlatalt
+
+
 def convert_turbines_to_radar_coords(turbine_lonlatalt, radar_lonlatalt):
     """
     Convert turbine geographic coordinates to radar spherical coordinates.
@@ -249,6 +291,8 @@ if __name__ == "__main__":
         turbine_lonlatalt = load_turbine_data(config["wind_turbine_list"], skip_rows=args.num_skip_rows)
     elif country == "SWE":
         turbine_lonlatalt = load_turbine_data_swe(config["wind_turbine_list"], skip_rows=args.num_skip_rows)
+    elif country == "EST":
+        turbine_lonlatalt = load_turbine_data_est(config["wind_turbine_list"], skip_rows=args.num_skip_rows)
     else:
         raise ValueError(f"Unsupported country: {country}")
 

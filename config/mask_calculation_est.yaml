@@ -1,0 +1,46 @@
+country: EST
+example_radar_files:
+  HAR:
+    - /testdata/202602130500_radar.polar.eehar.h5
+    - /testdata/202602130505_radar.polar.eehar.h5
+    - /testdata/202602130515_radar.polar.eehar.h5
+
+  SUR:
+    - /testdata/202602130500_radar.polar.eesur.h5
+    - /testdata/202602130505_radar.polar.eesur.h5
+    - /testdata/202602130515_radar.polar.eesur.h5
+
+# Lentoeste file for Sweden
+wind_turbine_list: /obstacle_data/ESTONIA_AREA_1_OBSTACLE_22012026.xls
+
+process_datasets:
+  - dataset1
+  - dataset2
+  - dataset3
+  - dataset4
+  - dataset5
+  - dataset6
+  - dataset7
+  - dataset8
+  - dataset9
+  - dataset10
+  - dataset11
+  - dataset12
+  - dataset13
+  - dataset14
+
+# Buffer to use around wind turbine
+elev_buffer_degrees:
+  # different buffer values for different elevations
+  - elev_interval: [0.0, 0.2]
+    buffer: 1.0
+  - elev_interval: [0.2, 0.5]
+    buffer: 0.8
+  - elev_interval: [0.5, 10.0]
+    buffer: 1.0
+range_buffer_before_meters: 2000
+range_buffer_after_meters: 8000
+azim_buffer_degrees: 2.0
+
+output_path: /turbine_masks
+output_filename: ee{radar_name}_turbine_mask.h5
