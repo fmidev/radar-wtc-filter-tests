@@ -12,3 +12,4 @@ dependencies:
   - wradlib
   - arm_pyart
   - xlrd
+  - lxml

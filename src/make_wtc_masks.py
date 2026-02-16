@@ -15,7 +15,7 @@ import yaml
 pyart.load_config(os.environ.get("PYART_CONFIG"))
 
 
-def load_turbine_data(csv_path, skip_rows=1):
+def load_turbine_data(csv_path, skip_rows=0):
     """
     Load and filter wind turbine data from CSV file.
 
@@ -54,7 +54,7 @@ def load_turbine_data(csv_path, skip_rows=1):
     return turbine_lonlatalt
 
 
-def load_turbine_data_swe(csv_path, skip_rows=1):
+def load_turbine_data_swe(csv_path, skip_rows=0):
     """
     Load and filter wind turbine data from CSV file.
 
@@ -105,7 +105,7 @@ def load_turbine_data_swe(csv_path, skip_rows=1):
     return turbine_lonlatalt
 
 
-def load_turbine_data_est(csv_path, skip_rows=1):
+def load_turbine_data_est(excel_path, **kwargs):
     """
     Load and filter wind turbine data from CSV file.
 
@@ -120,7 +120,7 @@ def load_turbine_data_est(csv_path, skip_rows=1):
         ValueError: If no wind turbines found or elevation column missing
     """
 
-    df = pd.read_excel(csv_path, sheet_name="ENR 5.4_Points", skiprows=3)
+    df = pd.read_excel(excel_path, sheet_name="ENR 5.4_Points", skiprows=3)
     df = df[df["Type"] == "WINDMILL"]
 
     if len(df) == 0:
@@ -141,6 +141,68 @@ def load_turbine_data_est(csv_path, skip_rows=1):
             df["ELEV MSL (m)"].apply(pd.to_numeric, errors="coerce").values,
         ]
     ).T
+    # Filter out turbines with missing data
+    turbine_lonlatalt = turbine_lonlatalt[~np.isnan(turbine_lonlatalt).any(axis=1)]
+
+    return turbine_lonlatalt
+
+
+def load_turbine_data_nor(xml_path, **kwargs):
+    """
+    Load and filter wind turbine data from CSV file.
+
+    Args:
+        csv_path: Path to CSV file containing turbine data
+        skip_rows: Number of header rows to skip
+
+    Returns:
+        np.ndarray: Array of shape (n_turbines, 3) with [lon, lat, alt] in meters
+
+    Raises:
+        ValueError: If no wind turbines found or elevation column missing
+    """
+
+    import xml.etree.ElementTree as ET
+
+    ns = {
+        "aixm": "http://www.aixm.aero/schema/5.1",
+        "gml": "http://www.opengis.net/gml/3.2",
+    }
+
+    tree = ET.parse(xml_path)
+    root = tree.getroot()
+
+    # Find all wind turbines in the XML
+    obstacles = root.findall(".//aixm:VerticalStructure", ns)
+    lonlatalt_list = []
+    for obs in obstacles:
+        try:
+            obstype = obs.find(".//aixm:type", ns).text
+
+            if obstype != "WINDMILL":
+                continue
+
+            # lat lon pos
+            pos = obs.find(".//gml:pos", ns).text
+            lat, lon = map(float, pos.split())
+
+            elev_item = obs.find(".//aixm:elevation", ns)
+            elev_value = float(elev_item.text)
+            elev_uom = obs.find(".//aixm:elevation", ns).attrib.get("uom")
+
+            if elev_uom == "FT":
+                elev = elev_value * 0.3048
+            elif elev_uom == "M":
+                elev = elev_value
+            else:
+                raise ValueError(f"Unknown elevation unit: {elev_uom}")
+
+            lonlatalt_list.append([lon, lat, elev])
+        except Exception as e:
+            print(f"Error processing obstacle: {e}")
+
+    turbine_lonlatalt = np.array(lonlatalt_list)
+
     # Filter out turbines with missing data
     turbine_lonlatalt = turbine_lonlatalt[~np.isnan(turbine_lonlatalt).any(axis=1)]
 
@@ -293,6 +355,8 @@ if __name__ == "__main__":
         turbine_lonlatalt = load_turbine_data_swe(config["wind_turbine_list"], skip_rows=args.num_skip_rows)
     elif country == "EST":
         turbine_lonlatalt = load_turbine_data_est(config["wind_turbine_list"], skip_rows=args.num_skip_rows)
+    elif country == "NOR":
+        turbine_lonlatalt = load_turbine_data_nor(config["wind_turbine_list"], skip_rows=args.num_skip_rows)
     else:
         raise ValueError(f"Unsupported country: {country}")
 
